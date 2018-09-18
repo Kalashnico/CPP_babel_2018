@@ -1,8 +1,6 @@
 *
 !doc
 !doc/*
-!lib
-!lib/*
 !client/
 !client/*.cpp
 !client/*.hpp
