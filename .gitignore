@@ -1,0 +1,6 @@
+cmake-build-debug/*
+CMakeFiles/*
+.idea/*
+CMakeLists.txt
+graphical_elts.txt
+graphical_uml.txt
