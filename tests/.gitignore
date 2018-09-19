@@ -1,0 +1,6 @@
+*
+!.gitignore
+!catch2/
+!catch2/catch.hpp
+!server/
+!server/*.cpp

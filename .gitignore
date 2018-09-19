@@ -1,12 +1,13 @@
 *
 !doc
-!doc/*
 !client/
+!client/*
 !client/*.cpp
 !client/*.hpp
+!client/**/*.cpp
+!client/**/*.hpp
 !server/
-!server/*.cpp
-!server/*.hpp
+!tests/
 !CMakeLists.txt
 !conanfile.txt
 !.gitignore
