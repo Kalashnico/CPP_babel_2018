@@ -20,5 +20,5 @@ set(SERVER_TEST_DIR ${TEST_DIR}/server)
 set(SERVER_TEST_SOURCES ${SERVER_TEST_DIR}/ProtocolTests.cpp)
 
 add_executable(babel_server_tests ${SERVER_SOURCES} ${SERVER_TEST_SOURCES})
-target_include_directories(babel_server_tests PUBLIC ${TEST_DIR}/catch2)
+target_include_directories(babel_server_tests PRIVATE ${TEST_DIR}/catch2)
 target_include_directories(babel_server_tests PRIVATE ${SERVER_DIR}/protocol)
