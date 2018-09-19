@@ -5,7 +5,6 @@
 ** Protocol
 */
 
-#include <cstring>
 #include "Protocol.hpp"
 
 namespace protocol {
