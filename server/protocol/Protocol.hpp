@@ -31,7 +31,7 @@ enum messageType {
 struct connectionMessage {
 	header headerId;
 	char clientName[12];
-	char ip[15];
+	char ip[16];
 	unsigned short port;
 };
 
@@ -44,7 +44,7 @@ struct callMessage {
 struct serverMessage {
 	header headerId;
 	char response;
-	char ip[15];
+	char ip[16];
 	unsigned short port;
 };
 
