@@ -59,6 +59,7 @@ typedef UINT8 PACKET_BUFFER[1024];
 
 #define NAME_LENGTH 12
 #define IP_LENGTH 15
+#define PACKET_SIZE 1024
 
 class Protocol {
 	public:
