@@ -5,10 +5,8 @@
 ** Protocol Tests
 */
 
-#define CATCH_CONFIG_MAIN
-
 #include <cstring>
-#include "catch.hpp"
+#include "Tests.hpp"
 #include "Protocol.hpp"
 
 TEST_CASE("Protocol connection message encode/decode", "[protocol]")
@@ -44,6 +42,8 @@ TEST_CASE("Protocol connection message encode/decode", "[protocol]")
 			REQUIRE(decodedMessage.port == 4242);
 		}
 	}
+
+	delete protocol;
 }
 
 TEST_CASE("Protocol call message encode/decode", "[protocol]")
@@ -77,6 +77,8 @@ TEST_CASE("Protocol call message encode/decode", "[protocol]")
 			REQUIRE(std::string(decodedMessage.contactName) == "Bar");
 		}
 	}
+
+	delete protocol;
 }
 
 TEST_CASE("Protocol server message encode/decode", "[protocol]")
@@ -87,10 +89,10 @@ TEST_CASE("Protocol server message encode/decode", "[protocol]")
 	SECTION("Setting up message") {
 		message.headerId = protocol::SERVER_RESPONSE;
 		message.response = static_cast<char>(protocol::UNAVAILABLE);
-		strcpy(message.ip, "101.10.101.10");
+		strcpy(message.ip, "1.1.1.1");
 		message.port = 6969;
 
-		REQUIRE(std::string(message.ip) == "101.10.101.10");
+		REQUIRE(std::string(message.ip) == "1.1.1.1");
 
 		SECTION("Encode and decode message") {
 			auto encodedMessage = protocol->encode(message);
@@ -107,8 +109,10 @@ TEST_CASE("Protocol server message encode/decode", "[protocol]")
 
 			REQUIRE(decodedMessage.headerId == protocol::SERVER_RESPONSE);
 			REQUIRE(decodedMessage.response == static_cast<char>(protocol::UNAVAILABLE));
-			REQUIRE(std::string(decodedMessage.ip) == "101.10.101.10");
+			REQUIRE(std::string(decodedMessage.ip) == "1.1.1.1");
 			REQUIRE(decodedMessage.port == 6969);
 		}
 	}
+
+	delete protocol;
 }
