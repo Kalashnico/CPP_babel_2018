@@ -13,12 +13,17 @@ set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
 
 set(SERVER_DIR ${CMAKE_SOURCE_DIR}/server)
-set(SERVER_SOURCES ${SERVER_DIR}/protocol/Protocol.cpp)
+set(SERVER_SOURCES ${SERVER_DIR}/protocol/Protocol.cpp
+		   ${SERVER_DIR}/data/Data.cpp)
 
 set(TEST_DIR ${CMAKE_SOURCE_DIR}/tests)
 set(SERVER_TEST_DIR ${TEST_DIR}/server)
-set(SERVER_TEST_SOURCES ${SERVER_TEST_DIR}/ProtocolTests.cpp)
+set(SERVER_TEST_SOURCES ${SERVER_TEST_DIR}/Tests.cpp
+			${SERVER_TEST_DIR}/ProtocolTests.cpp
+			${SERVER_TEST_DIR}/DataTests.cpp)
 
 add_executable(babel_server_tests ${SERVER_SOURCES} ${SERVER_TEST_SOURCES})
-target_include_directories(babel_server_tests PRIVATE ${TEST_DIR}/catch2)
-target_include_directories(babel_server_tests PRIVATE ${SERVER_DIR}/protocol)
+target_include_directories(babel_server_tests PRIVATE ${TEST_DIR}/catch2
+						      ${SERVER_TEST_DIR}
+						      ${SERVER_DIR}/protocol
+						      ${SERVER_DIR}/data)
