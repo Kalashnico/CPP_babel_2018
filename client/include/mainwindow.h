@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QListWidgetItem>
 
 namespace Ui {
 class MainWindow;
@@ -15,8 +16,15 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_Contacts_itemClicked(QListWidgetItem *item);
+    void on_RefreshButton_clicked();
+    void CallAction();
+
 private:
     Ui::MainWindow *ui;
+    QString _selectedContact;
+
 };
 
 #endif // MAINWINDOW_H

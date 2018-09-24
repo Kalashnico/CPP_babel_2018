@@ -24,13 +24,16 @@ CONFIG += c++11
 
 SOURCES += \
         src/main.cpp \
-        src/mainwindow.cpp
+        src/mainwindow.cpp \
+        src/callwindow.cpp
 
 HEADERS += \
-        include/mainwindow.h
+        include/mainwindow.h \
+        include/callwindow.h
 
 FORMS += \
-        form/mainwindow.ui
+        form/mainwindow.ui \
+        form/callwindow.ui
 
 INCLUDEPATH += include
 
