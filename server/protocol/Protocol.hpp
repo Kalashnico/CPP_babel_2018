@@ -53,13 +53,13 @@ enum state {
 	UNAVAILABLE
 };
 
-typedef uint8_t UINT8;
-typedef UINT8* PACKET;
-typedef UINT8 PACKET_BUFFER[1024];
+using UINT8 = uint8_t;
+using PACKET = UINT8*;
+using PACKET_BUFFER = UINT8[1024];
 
-#define NAME_LENGTH 12
-#define IP_LENGTH 15
-#define PACKET_SIZE 1024
+unsigned const NAME_LENGTH =  12;
+unsigned const IP_LENGTH =  15;
+unsigned const PACKET_SIZE =  1024;
 
 class Protocol {
 	public:

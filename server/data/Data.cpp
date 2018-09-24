@@ -43,7 +43,7 @@ protocol::serverMessage Data::interpretMessage(protocol::callMessage &message) n
 
 	response.headerId = protocol::SERVER_RESPONSE;
 	response.response = 0;
-	strncpy(response.ip, "", IP_LENGTH);
+	strncpy(response.ip, "", protocol::IP_LENGTH);
 	response.port = 0;
 
 	if (message.headerId == protocol::REQUEST_CALL) {
@@ -55,9 +55,9 @@ protocol::serverMessage Data::interpretMessage(protocol::callMessage &message) n
 		if (ip == "ERROR" || port == 0)
 			return response;
 
-		for (int i = 0; i < IP_LENGTH; i++)
+		for (int i = 0; i < protocol::IP_LENGTH; i++)
 			response.ip[i] = ip.c_str()[i];
-		response.ip[IP_LENGTH] = '\0';
+		response.ip[protocol::IP_LENGTH] = '\0';
 
 		response.port = port;
 
