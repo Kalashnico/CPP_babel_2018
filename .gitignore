@@ -4,8 +4,10 @@
 !client/*
 !client/*.cpp
 !client/*.hpp
+!client/*.ui
 !client/**/*.cpp
 !client/**/*.hpp
+!client/**/*.ui
 !server/
 !tests/
 !CMakeLists.txt

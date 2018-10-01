@@ -1,11 +1,11 @@
-#include "mainwindow.h"
+#include "MainWindow.hpp"
 #include "ui_mainwindow.h"
 #include <iostream>
 #include <QListView>
 #include <QStringListModel>
 #include <QAction>
 #include <QMenu>
-#include <callwindow.h>
+#include <CallWindow.hpp>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
