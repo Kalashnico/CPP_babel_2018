@@ -1,5 +1,5 @@
 #include "CallWindow.hpp"
-#include "ui_callwindow.h"
+#include "ui_CallWindow.h"
 #include <iostream>
 
 CallWindow::CallWindow(QString contactCalled, QWidget *parent) :
