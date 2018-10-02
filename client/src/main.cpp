@@ -3,7 +3,6 @@
 #include <QtWidgets/QApplication>
 #include <QtGui/QFontDatabase>
 #include <QtCore/QFile>
-#include <iostream>
 
 int main(int argc, char *argv[])
 {
@@ -11,7 +10,9 @@ int main(int argc, char *argv[])
 
 	int id = QFontDatabase::addApplicationFont("../../fonts/arial.ttf");
 	QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-	QFont ariel(family);
+	QFont arial(family);
+
+	a.setFont(arial);
 
 	MainWindow w;
 	w.show();
