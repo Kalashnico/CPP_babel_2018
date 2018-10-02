@@ -1,11 +1,12 @@
 #include "MainWindow.hpp"
+#include "CallWindow.hpp"
 #include "ui_MainWindow.h"
+#include "moc_MainWindow.cpp"
 #include <iostream>
-#include <QListView>
-#include <QStringListModel>
-#include <QAction>
-#include <QMenu>
-#include <CallWindow.hpp>
+#include <QtWidgets/QListView>
+#include <QtCore/QStringListModel>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QMenu>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

@@ -1,10 +1,19 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.9.6)
 project(Babel VERSION 0.1.0)
 set(CMAKE_CXX_STANDARD 17)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 conan_set_find_paths()
+
+set(CLIENT_DIR ${CMAKE_SOURCE_DIR}/client)
+set(CLIENT_UI_DIR ${CLIENT_DIR}/form)
+set(CLIENT_SOURCES_DIR ${CLIENT_DIR}/src)
+set(CLIENT_SOURCES ${CLIENT_SOURCES_DIR}/main.cpp
+		   ${CLIENT_SOURCES_DIR}/MainWindow.cpp
+		   ${CLIENT_SOURCES_DIR}/CallWindow.cpp)
+set(CLIENT_UI	   ${CLIENT_UI_DIR}/CallWindow.ui
+		   ${CLIENT_UI_DIR}/MainWindow.ui)
 
 set(SERVER_DIR ${CMAKE_SOURCE_DIR}/server)
 set(SERVER_SOURCES_MAIN	   ${SERVER_DIR}/main.cpp)
@@ -25,10 +34,25 @@ conan_target_link_libraries(babel_server_tests)
 target_include_directories(babel_server_tests PRIVATE ${TEST_DIR}/catch2
 						      ${SERVER_TEST_DIR}
 						      ${SERVER_DIR}/protocol
-						      ${SERVER_DIR}/data)
+						      ${SERVER_DIR}/data
+						      ${CONAN_INCLUDE_DIRS})
 
 add_executable(babel_server ${SERVER_SOURCES_MAIN} ${SERVER_SOURCES})
 conan_target_link_libraries(babel_server)
 target_include_directories(babel_server PRIVATE ${SERVER_DIR}/data
 						${SERVER_DIR}/protocol
-						${SERVER_DIR}/tcpserver)
+						${SERVER_DIR}/tcpserver
+						${CONAN_INCLUDE_DIRS})
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_CXX_FLAGS "-fPIC")
+
+set(CMAKE_AUTOUIC_SEARCH_PATHS ${CLIENT_UI_DIR})
+find_package(Qt5Widgets CONFIG REQUIRED)
+
+add_executable(babel_client ${CLIENT_SOURCES})
+conan_target_link_libraries(babel_client)
+target_link_libraries(babel_client ${CONAN_LIB_DIRS_QT}/libQt5Gui.so ${CONAN_LIB_DIRS_QT}/libQt5Core.so ${CONAN_LIB_DIRS_QT}/libQt5Widgets.so ${CONAN_LIB_DIRS_QT}/libQt5Network.so ${CONAN_LIB_DIRS_QT}/libQt5XcbQpa.so ${CONAN_LIB_DIRS_QT}/libQt5DBus.so ${CONAN_QT_ROOT}/plugins/platforms/libqxcb.so)
+target_include_directories(babel_client PRIVATE ${CLIENT_DIR}/include
+						${CONAN_INCLUDE_DIRS})

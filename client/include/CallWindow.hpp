@@ -1,7 +1,7 @@
 #ifndef CALLWINDOW_H
 #define CALLWINDOW_H
 
-#include <QMainWindow>
+#include <QtWidgets/QMainWindow>
 
 namespace Ui {
 class CallWindow;

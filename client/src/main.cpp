@@ -1,6 +1,6 @@
 #include "MainWindow.hpp"
 #include <CallWindow.hpp>
-#include <QApplication>
+#include <QtWidgets/QApplication>
 
 int main(int argc, char *argv[])
 {
