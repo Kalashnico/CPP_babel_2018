@@ -49,10 +49,14 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_CXX_FLAGS "-fPIC")
 
 set(CMAKE_AUTOUIC_SEARCH_PATHS ${CLIENT_UI_DIR})
-find_package(Qt5Widgets CONFIG REQUIRED)
+find_package(${CONAN_LIB_DIRS_QT}/cmake/Qt5Widgets/Qt5Widgets CONFIG REQUIRED)
 
 add_executable(babel_client ${CLIENT_SOURCES})
 conan_target_link_libraries(babel_client)
-target_link_libraries(babel_client ${CONAN_LIB_DIRS_QT}/libQt5Gui.so ${CONAN_LIB_DIRS_QT}/libQt5Core.so ${CONAN_LIB_DIRS_QT}/libQt5Widgets.so ${CONAN_LIB_DIRS_QT}/libQt5Network.so ${CONAN_LIB_DIRS_QT}/libQt5XcbQpa.so ${CONAN_LIB_DIRS_QT}/libQt5DBus.so ${CONAN_QT_ROOT}/plugins/platforms/libqxcb.so)
+target_link_libraries(babel_client ${CONAN_LIB_DIRS_QT}/libQt5Gui.so ${CONAN_LIB_DIRS_QT}/libQt5Core.so ${CONAN_LIB_DIRS_QT}/libQt5Widgets.so ${CONAN_LIB_DIRS_QT}/libQt5Network.so ${CONAN_LIB_DIRS_QT}/libQt5XcbQpa.so ${CONAN_LIB_DIRS_QT}/libQt5DBus.so)
 target_include_directories(babel_client PRIVATE ${CLIENT_DIR}/include
 						${CONAN_INCLUDE_DIRS})
+
+add_custom_command(TARGET babel_client
+			COMMAND mkdir -p bin/platforms
+			COMMAND ln -sf ${CONAN_QT_ROOT}/plugins/platforms/libqxcb.so bin/platforms/.)
