@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.9.6)
 project(Babel VERSION 0.1.0)
 set(CMAKE_CXX_STANDARD 17)
 
-set(${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/build)
+set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 conan_set_find_paths()
