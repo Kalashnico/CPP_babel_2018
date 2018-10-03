@@ -10,7 +10,7 @@ LoginWindow::LoginWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->ConnectionFailedLabel->setVisible(false);
-    ui->PasswordInput->setValidator(new QIntValidator(0, 65535, this));
+    ui->PortInput->setValidator(new QIntValidator(0, 65535, this));
 }
 
 
@@ -22,6 +22,8 @@ LoginWindow::~LoginWindow()
 void LoginWindow::on_OkButton_clicked()
 {
     std::cout << "Ok Button Pressed" << std::endl;
+    auto port = ui->PortInput->text().toInt();
+    auto username = ui->LoginInput->text().toStdString();
 
     bool success = true;
 
