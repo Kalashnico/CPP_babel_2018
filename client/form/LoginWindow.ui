@@ -45,7 +45,7 @@
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
        </property>
        <property name="placeholderText">
-        <string>Login</string>
+        <string>Username</string>
        </property>
       </widget>
      </item>
@@ -58,13 +58,13 @@
         </size>
        </property>
        <property name="inputMethodHints">
-        <set>Qt::ImhHiddenText|Qt::ImhNoAutoUppercase|Qt::ImhNoPredictiveText|Qt::ImhSensitiveData</set>
+        <set>Qt::ImhDigitsOnly|Qt::ImhFormattedNumbersOnly</set>
        </property>
        <property name="echoMode">
-        <enum>QLineEdit::Password</enum>
+        <enum>QLineEdit::Normal</enum>
        </property>
        <property name="placeholderText">
-        <string>Password</string>
+        <string>Port</string>
        </property>
       </widget>
      </item>
@@ -92,7 +92,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Invalid Password/Login please try again.</string>
+     <string>Connection Failed</string>
     </property>
    </widget>
   </widget>

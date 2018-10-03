@@ -10,6 +10,7 @@ LoginWindow::LoginWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->ConnectionFailedLabel->setVisible(false);
+    ui->PasswordInput->setValidator(new QIntValidator(0, 65535, this));
 }
 
 
