@@ -63,6 +63,8 @@ void MainWindow::on_RefreshButton_clicked()
 	protocol::infoMessage refreshMessage;
 	refreshMessage.headerId = protocol::GET_CONTACTS;
 	_tcpClient->send(refreshMessage);
+	auto response = _tcpClient->receiveClients();
+	std::cout << response.contactNames << std::endl;
 }
 
 void MainWindow::on_Contacts_itemClicked(QListWidgetItem *item)
