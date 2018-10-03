@@ -24,6 +24,5 @@ int main(int argc, char *argv[])
 	w.show();
 	a.exec();
 
-	delete tcpClient;
 	return 0;
 }

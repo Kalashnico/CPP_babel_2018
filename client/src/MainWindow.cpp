@@ -31,8 +31,10 @@ MainWindow::~MainWindow()
 	strcpy(disconnectMessage.ip, "");
 	disconnectMessage.port = _port;
 	_tcpClient->send(disconnectMessage);
+
 	delete _protocol;
-    delete ui;
+	delete _tcpClient;
+	delete ui;
 }
 
 void MainWindow::setTcpClient(tcpclient::TcpClient *tcp)

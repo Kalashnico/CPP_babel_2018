@@ -24,7 +24,7 @@ class LoginWindow : public QMainWindow
 	private:
 		Ui::LoginWindow *ui;
 		tcpclient::TcpClient *_tcpClient;
-        MainWindow _mainWindow;
+		MainWindow *_mainWindow;
 };
 
 #endif // LOGINWINDOW_H
