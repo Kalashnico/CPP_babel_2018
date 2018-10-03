@@ -14,7 +14,9 @@ set(CLIENT_SOURCES_DIR ${CLIENT_DIR}/src)
 set(CLIENT_SOURCES ${CLIENT_SOURCES_DIR}/main.cpp
 		   ${CLIENT_SOURCES_DIR}/MainWindow.cpp
 		   ${CLIENT_SOURCES_DIR}/LoginWindow.cpp
-		   ${CLIENT_SOURCES_DIR}/CallWindow.cpp)
+		   ${CLIENT_SOURCES_DIR}/CallWindow.cpp
+		   ${CLIENT_SOURCES_DIR}/Protocol.cpp
+		   ${CLIENT_SOURCES_DIR}/TcpClient.cpp)
 set(CLIENT_UI	   ${CLIENT_UI_DIR}/CallWindow.ui
 		   ${CLIENT_UI_DIR}/LoginWindow.ui
 		   ${CLIENT_UI_DIR}/MainWindow.ui)
