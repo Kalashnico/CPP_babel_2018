@@ -9,6 +9,7 @@
 
 #include <boost/asio.hpp>
 #include "ATcpServer.hpp"
+#include "Data.hpp"
 
 namespace tcpserver {
 
@@ -21,6 +22,7 @@ class BoostTcpServer : public ATcpServer {
 
 	private:
 		boost::asio::ip::tcp::acceptor _acceptor;
+		data::Data *_data;
 
 		void accept() noexcept;
 };
