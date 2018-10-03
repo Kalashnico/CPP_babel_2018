@@ -25,6 +25,8 @@ class BoostTcpSession : public std::enable_shared_from_this<BoostTcpSession> {
 		protocol::Protocol _protocol;
 		data::Data _data;
 
+		std::string _clientIp;
+
 		protocol::PACKET_BUFFER _packet;
 
 		void readPacket() noexcept;
