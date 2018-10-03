@@ -11,7 +11,8 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    _protocol(new protocol::Protocol())
+    _protocol(new protocol::Protocol()),
+    _tcpClient(nullptr)
 {
     ui->setupUi(this);
     QStringList list;
@@ -25,15 +26,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-	protocol::connectionMessage disconnectMessage;
-	disconnectMessage.headerId = protocol::DISCONNECT;
-	strcpy(disconnectMessage.clientName, _username.c_str());
-	strcpy(disconnectMessage.ip, "");
-	disconnectMessage.port = _port;
-	_tcpClient->send(disconnectMessage);
+	if (_tcpClient != nullptr) {
+		protocol::connectionMessage disconnectMessage;
+		disconnectMessage.headerId = protocol::DISCONNECT;
+		strcpy(disconnectMessage.clientName, _username.c_str());
+		strcpy(disconnectMessage.ip, "");
+		disconnectMessage.port = _port;
+		_tcpClient->send(disconnectMessage);
+		delete _tcpClient;
+	}
 
 	delete _protocol;
-	delete _tcpClient;
 	delete ui;
 }
 
@@ -56,6 +59,10 @@ void MainWindow::on_RefreshButton_clicked()
 {
     // Refresh List (See Constructor)
     std::cout << "Refresh" << std::endl;
+
+	protocol::infoMessage refreshMessage;
+	refreshMessage.headerId = protocol::GET_CONTACTS;
+	_tcpClient->send(refreshMessage);
 }
 
 void MainWindow::on_Contacts_itemClicked(QListWidgetItem *item)
