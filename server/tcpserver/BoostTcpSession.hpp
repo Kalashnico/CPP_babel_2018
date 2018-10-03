@@ -29,6 +29,8 @@ class BoostTcpSession : public std::enable_shared_from_this<BoostTcpSession> {
 
 		protocol::PACKET_BUFFER _packet;
 
+		const char *headerNames[6] = { "CONNECT", "DISCONNECT", "REQUEST_CALL", "NO_REPLY", "END_CALL", "SERVER_RESPONSE" };
+
 		void readPacket() noexcept;
 		void writePacket(protocol::serverMessage&) noexcept;
 };
