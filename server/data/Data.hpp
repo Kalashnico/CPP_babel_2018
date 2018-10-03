@@ -26,12 +26,15 @@ class Data {
 
 		protocol::serverMessage interpretMessage(protocol::connectionMessage&) noexcept;
 		protocol::serverMessage interpretMessage(protocol::callMessage&) noexcept;
+		protocol::infoResponseMessage interpretMessage(protocol::infoMessage&) noexcept;
 
 	private:
 		std::unordered_map<std::string, client> _clients;
 
 		bool addClient(protocol::connectionMessage&) noexcept;
 		bool removeClient(std::string&) noexcept;
+
+		std::string getAllClientNames() const noexcept;
 
 		std::string getClientIp(std::string&) const noexcept;
 		unsigned short getClientPort(std::string&) const noexcept;
