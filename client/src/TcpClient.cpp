@@ -73,4 +73,31 @@ protocol::serverMessage TcpClient::receive() noexcept
 	return error;
 }
 
+protocol::infoResponseMessage TcpClient::receiveClients() noexcept
+{
+	if (_socket.waitForReadyRead()) {
+		auto received = _socket.readAll();
+		protocol::PACKET_BUFFER packet;
+		for (int i = 0; i < protocol::PACKET_SIZE; i++)
+			packet[i] = received.data()[i];
+
+		auto response = _protocol.decodeInfoResponseMessage(packet, 0);
+
+		if (_socket.waitForReadyRead()) {
+			auto received = _socket.readAll();
+			protocol::UINT8 packet[protocol::PACKET_SIZE + response.nextMessageLength];
+			for (int i = 0; i < protocol::PACKET_SIZE + response.nextMessageLength; i++)
+				packet[i] = received.data()[i];
+
+			return _protocol.decodeInfoResponseMessage(packet, response.nextMessageLength);
+		}
+	}
+
+	protocol::infoResponseMessage error;
+	error.headerId = protocol::SERVER_RESPONSE;
+	error.nextMessageLength = -1;
+	error.contactNames = strdup("");
+	return error;
+}
+
 }
