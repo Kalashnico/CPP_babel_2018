@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets
+QT       += core gui widgets network
 
 TARGET = babel_client
 TEMPLATE = app
@@ -26,12 +26,16 @@ SOURCES += \
         src/main.cpp \
     src/CallWindow.cpp \
     src/MainWindow.cpp \
-    src/LoginWindow.cpp
+    src/LoginWindow.cpp \
+    src/TcpClient.cpp \
+    src/Protocol.cpp
 
 HEADERS += \
     include/CallWindow.hpp \
     include/MainWindow.hpp \
-    include/LoginWindow.hpp
+    include/LoginWindow.hpp \
+    include/TcpClient.hpp \
+    include/Protocol.hpp
 
 FORMS += \
     form/CallWindow.ui \
