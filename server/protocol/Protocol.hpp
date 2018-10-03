@@ -15,6 +15,7 @@ namespace protocol {
 enum header {
 	CONNECT,
 	DISCONNECT,
+	GET_CONTACTS,
 	REQUEST_CALL,
 	NO_REPLY,
 	END_CALL,
@@ -23,6 +24,7 @@ enum header {
 
 enum messageType {
 	CONNECTION,
+	INFO,
 	CALL,
 	SERVER,
 	UNDEFINED
@@ -41,11 +43,21 @@ struct callMessage {
 	char contactName[12];
 };
 
+struct infoMessage {
+	header headerId;
+};
+
 struct serverMessage {
 	header headerId;
 	char response;
 	char ip[16];
 	unsigned short port;
+};
+
+struct infoResponseMessage {
+	header headerId;
+	unsigned short nextMessageLength;
+	char *contactNames;
 };
 
 enum state {
@@ -68,12 +80,16 @@ class Protocol {
 
 		PACKET encode(connectionMessage&) const noexcept;
 		PACKET encode(callMessage&) const noexcept;
+		PACKET encode(infoMessage&) const noexcept;
 		PACKET encode(serverMessage&) const noexcept;
+		PACKET encode(infoResponseMessage&) const noexcept;
 
 		messageType getMessageType(PACKET_BUFFER&) const noexcept;
 		connectionMessage decodeConnectionMessage(PACKET_BUFFER&) const noexcept;
 		callMessage decodeCallMessage(PACKET_BUFFER&) const noexcept;
+		infoMessage decodeInfoMessage(PACKET_BUFFER&) const noexcept;
 		serverMessage decodeServerMessage(PACKET_BUFFER&) const noexcept;
+		infoResponseMessage decodeInfoResponseMessage(PACKET_BUFFER&, int) const noexcept;
 
 	private:
 		UINT8 *encodeHeader(UINT8*, header&) const noexcept;
