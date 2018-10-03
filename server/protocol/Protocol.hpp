@@ -89,7 +89,7 @@ class Protocol {
 		callMessage decodeCallMessage(PACKET_BUFFER&) const noexcept;
 		infoMessage decodeInfoMessage(PACKET_BUFFER&) const noexcept;
 		serverMessage decodeServerMessage(PACKET_BUFFER&) const noexcept;
-		infoResponseMessage decodeInfoResponseMessage(PACKET_BUFFER&, int) const noexcept;
+		infoResponseMessage decodeInfoResponseMessage(UINT8*, int) const noexcept;
 
 	private:
 		UINT8 *encodeHeader(UINT8*, header&) const noexcept;

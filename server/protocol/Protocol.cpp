@@ -144,14 +144,18 @@ serverMessage Protocol::decodeServerMessage(PACKET_BUFFER &buffer) const noexcep
 	return message;
 }
 
-infoResponseMessage Protocol::decodeInfoResponseMessage(PACKET_BUFFER &buffer, int length) const noexcept
+infoResponseMessage Protocol::decodeInfoResponseMessage(UINT8 *buffer, int length) const noexcept
 {
 	UINT8 *ptrBuffer = &buffer[0];
 	infoResponseMessage message;
 
 	ptrBuffer = decodeHeader(ptrBuffer, &message.headerId);
 	ptrBuffer = decodeUShort(ptrBuffer, &message.nextMessageLength);
-	ptrBuffer = decodeCharArray(ptrBuffer, message.contactNames, length);
+	if (length > 0) {
+		message.contactNames = new char[length];
+		ptrBuffer = decodeCharArray(ptrBuffer, message.contactNames, length);
+	} else
+		message.contactNames = strdup("");
 
 	return message;
 }
