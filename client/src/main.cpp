@@ -23,5 +23,7 @@ int main(int argc, char *argv[])
 	LoginWindow w(tcpClient);
 	w.show();
 	a.exec();
+
+	delete tcpClient;
 	return 0;
 }
