@@ -8,9 +8,13 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QMenu>
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(tcpclient::TcpClient *tcpClient, std::string &username, unsigned short port, QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    _protocol(new protocol::Protocol()),
+    _tcpClient(tcpClient),
+    _username(username),
+    _port(port)
 {
     ui->setupUi(this);
     QStringList list;
@@ -24,7 +28,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+	protocol::connectionMessage disconnectMessage;
+	disconnectMessage.headerId = protocol::DISCONNECT;
+	strcpy(disconnectMessage.clientName, _username.c_str());
+	strcpy(disconnectMessage.ip, "");
+	disconnectMessage.port = _port;
+
+	_tcpClient->send(disconnectMessage);
+
+	delete _protocol;
+	delete ui;
 }
 
 void MainWindow::on_RefreshButton_clicked()

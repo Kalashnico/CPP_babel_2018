@@ -3,6 +3,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QListWidgetItem>
+#include "TcpClient.hpp"
 
 namespace Ui {
 class MainWindow;
@@ -13,7 +14,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(tcpclient::TcpClient*, std::string &username, unsigned short port, QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
@@ -24,6 +25,11 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QString _selectedContact;
+
+    protocol::Protocol *_protocol;
+    tcpclient::TcpClient *_tcpClient;
+    std::string _username;
+    unsigned short _port;
 
 };
 
