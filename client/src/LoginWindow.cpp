@@ -18,7 +18,7 @@ LoginWindow::LoginWindow(tcpclient::TcpClient *tcpClient, QWidget *parent) :
 
 LoginWindow::~LoginWindow()
 {
-    delete ui;
+	delete ui;
 }
 
 void LoginWindow::on_OkButton_clicked()
@@ -44,10 +44,12 @@ void LoginWindow::on_OkButton_clicked()
 			if (receivedMessage.response == 0)
 				success = false;
 		}
+
+		delete protocol;
 	}
 
 	if (success) {
-		MainWindow *w = new MainWindow(nullptr);
+		MainWindow *w = new MainWindow(_tcpClient, username, port, nullptr);
 		w->show();
 		this->close();
 	} else
