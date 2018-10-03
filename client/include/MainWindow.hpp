@@ -14,8 +14,11 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(tcpclient::TcpClient*, std::string &username, unsigned short port, QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void setTcpClient(tcpclient::TcpClient *tcp);
+    void setUsername(const std::string &username);
+    void setPort(unsigned short port);
 
 private slots:
     void on_Contacts_itemClicked(QListWidgetItem *item);
