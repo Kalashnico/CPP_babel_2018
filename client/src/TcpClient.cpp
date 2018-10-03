@@ -31,6 +31,12 @@ bool TcpClient::send(protocol::callMessage &message) noexcept
 	return(send(packet));
 }
 
+bool TcpClient::send(protocol::infoMessage &message) noexcept
+{
+	auto packet = _protocol.encode(message);
+	return(send(packet));
+}
+
 bool TcpClient::send(protocol::PACKET &packet) noexcept
 {
 	QByteArray data;

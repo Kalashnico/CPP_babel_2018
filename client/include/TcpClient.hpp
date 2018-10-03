@@ -19,6 +19,7 @@ class TcpClient {
 
 		bool send(protocol::connectionMessage&) noexcept;
 		bool send(protocol::callMessage&) noexcept;
+		bool send(protocol::infoMessage&) noexcept;
 
 		protocol::serverMessage receive() noexcept;
 
