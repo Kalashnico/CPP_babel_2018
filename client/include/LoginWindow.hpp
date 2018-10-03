@@ -23,8 +23,6 @@ class LoginWindow : public QMainWindow
 	private:
 		Ui::LoginWindow *ui;
 		tcpclient::TcpClient *_tcpClient;
-
-		std::string getInternetIP() const noexcept;
 };
 
 #endif // LOGINWINDOW_H
