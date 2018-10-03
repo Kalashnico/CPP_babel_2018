@@ -12,6 +12,7 @@ LoginWindow::LoginWindow(tcpclient::TcpClient *tcpClient, QWidget *parent) :
     ui->setupUi(this);
     ui->ConnectionFailedLabel->setVisible(false);
     ui->PortInput->setValidator(new QIntValidator(0, 65535, this));
+    ui->LoginInput->setMaxLength(12);
 }
 
 

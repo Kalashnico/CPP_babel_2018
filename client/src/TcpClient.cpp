@@ -11,7 +11,7 @@ namespace tcpclient {
 
 TcpClient::TcpClient()
 {
-	_socket.connectToHost("127.0.0.1", 6969);
+	_socket.connectToHost("87.231.49.182", 6969);
 }
 
 TcpClient::~TcpClient()
