@@ -7,6 +7,7 @@
 #include <QtCore/QStringListModel>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QMenu>
+#include <boost/algorithm/string.hpp>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -15,13 +16,6 @@ MainWindow::MainWindow(QWidget *parent) :
     _tcpClient(nullptr)
 {
     ui->setupUi(this);
-    QStringList list;
-    list.append("Contact 1");
-    list.append("Contact 2");
-    list.append("Contact 3");
-    list.append("Contact 4");
-    ui->Contacts->addItems(list);
-
 }
 
 MainWindow::~MainWindow()
@@ -55,16 +49,31 @@ void MainWindow::setPort(unsigned short port)
     this->_port = port;
 }
 
+void MainWindow::refreshContacts()
+{
+	on_RefreshButton_clicked();
+}
+
 void MainWindow::on_RefreshButton_clicked()
 {
-    // Refresh List (See Constructor)
-    std::cout << "Refresh" << std::endl;
-
 	protocol::infoMessage refreshMessage;
 	refreshMessage.headerId = protocol::GET_CONTACTS;
 	_tcpClient->send(refreshMessage);
 	auto response = _tcpClient->receiveClients();
-	std::cout << response.contactNames << std::endl;
+
+	std::string contacts(response.contactNames);
+
+	std::vector<std::string> splitContacts;
+	boost::split(splitContacts, contacts, [](char c){return c == '|';});
+
+	_contacts.clear();
+	for (auto contact : splitContacts) {
+		if (contact != _username)
+			_contacts.append(QString::fromStdString(contact));
+	}
+
+	ui->Contacts->clear();
+	ui->Contacts->addItems(_contacts);
 }
 
 void MainWindow::on_Contacts_itemClicked(QListWidgetItem *item)
