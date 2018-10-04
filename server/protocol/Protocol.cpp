@@ -152,8 +152,9 @@ infoResponseMessage Protocol::decodeInfoResponseMessage(UINT8 *buffer, int lengt
 	ptrBuffer = decodeHeader(ptrBuffer, &message.headerId);
 	ptrBuffer = decodeUShort(ptrBuffer, &message.nextMessageLength);
 	if (length > 0) {
-		message.contactNames = new char[length];
+		message.contactNames = new char[length + 1];
 		ptrBuffer = decodeCharArray(ptrBuffer, message.contactNames, length);
+		message.contactNames[length] = 0;
 	} else
 		message.contactNames = strdup("");
 
