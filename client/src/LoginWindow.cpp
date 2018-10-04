@@ -56,6 +56,7 @@ void LoginWindow::on_OkButton_clicked()
         this->_mainWindow->setUsername(username);
         this->_mainWindow->setTcpClient(_tcpClient);
         this->_mainWindow->show();
+	this->_mainWindow->refreshContacts();
         this->close();
     } else
         ui->ConnectionFailedLabel->setVisible(true);
