@@ -8,23 +8,23 @@
 #pragma once
 
 #include <boost/asio.hpp>
-#include "ATcpServer.hpp"
+#include "ITcpServer.hpp"
 #include "Data.hpp"
 
 namespace tcpserver {
 
-class BoostTcpServer : public ATcpServer {
+class BoostTcpServer : public ITcpServer {
 	public:
 		BoostTcpServer(boost::asio::io_context&, unsigned short);
 		~BoostTcpServer();
 
-		void run() noexcept final;
+		void run() noexcept;
+		void accept() noexcept;
 
 	private:
 		boost::asio::ip::tcp::acceptor _acceptor;
 		data::Data *_data;
 
-		void accept() noexcept;
 };
 
 }

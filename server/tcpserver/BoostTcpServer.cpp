@@ -13,7 +13,7 @@
 namespace tcpserver {
 
 BoostTcpServer::BoostTcpServer(boost::asio::io_context &ioContext, unsigned short port)
-	: ATcpServer(port), _acceptor(ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
+	: _acceptor(ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
 	_data(new data::Data())
 {
 	run();
