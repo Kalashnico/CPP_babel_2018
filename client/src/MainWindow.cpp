@@ -37,6 +37,7 @@ MainWindow::~MainWindow()
 void MainWindow::setTcpClient(tcpclient::TcpClient *tcp)
 {
     this->_tcpClient = tcp;
+    this->_udpClient = new udpclient::UdpClient(this->_port);
 }
 
 void MainWindow::setUsername(const std::string &username)
@@ -88,6 +89,20 @@ void MainWindow::on_Contacts_itemClicked(QListWidgetItem *item)
 
 void MainWindow::CallAction()
 {
-    auto callwindow = new CallWindow(this->_selectedContact, this);
-    callwindow->show();
+	auto callwindow = new CallWindow(this->_selectedContact, this);
+
+	protocol::callMessage callRequestMessage;
+	callRequestMessage.headerId = protocol::REQUEST_CALL;
+	strcpy(callRequestMessage.clientName, _username.c_str());
+	strcpy(callRequestMessage.contactName, _selectedContact.toStdString().c_str());
+	_tcpClient->send(callRequestMessage);
+
+	auto serverReponse =  _tcpClient->receive();
+	if (serverReponse.response == 1) {
+		std::string ip(serverReponse.ip);
+		_udpClient->setContactInfo(ip, serverReponse.port);
+		_udpClient->sendDatagram();
+	}
+
+	callwindow->show();
 }

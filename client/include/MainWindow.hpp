@@ -4,6 +4,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QListWidgetItem>
 #include "TcpClient.hpp"
+#include "UdpClient.hpp"
 
 namespace Ui {
 class MainWindow;
@@ -33,6 +34,7 @@ private:
 
     protocol::Protocol *_protocol;
     tcpclient::TcpClient *_tcpClient;
+    udpclient::UdpClient *_udpClient;
     std::string _username;
     unsigned short _port;
 
