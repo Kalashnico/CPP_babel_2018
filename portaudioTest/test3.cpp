@@ -121,6 +121,7 @@ int main(void)
 
     numBytes = FRAMES_PER_BUFFER * NUM_CHANNELS * SAMPLE_SIZE ;
     sampleBlock = (unsigned short *) malloc( numBytes );
+	memset(sampleBlock, 0, numBytes);
     if( sampleBlock == NULL )
     {
         printf("Could not allocate record array.\n");

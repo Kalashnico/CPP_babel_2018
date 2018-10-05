@@ -31,7 +31,7 @@ EncodedSound CodecManager::encode(unsigned short *sound)
 
 	EncodedSound encodedStruct;
 
-	encodedStruct.encoded.resize(_bufferSize * _channels * 2);
+	encodedStruct.encoded.resize(_bufferSize * _channels);
 
 	_bytes = opus_encode(_encoder, reinterpret_cast<opus_int16 const *>(sampleBlockv.data()),
 			     _bufferSize, encodedStruct.encoded.data(), encodedStruct.encoded.size());
@@ -54,7 +54,8 @@ unsigned short *CodecManager::decode(EncodedSound sound)
 	if (dec_bytes < 0)
 		std::cerr << "Failed to decode sound" << std::endl;
 
-	unsigned short *decodedArray = &decoded[0];
+	auto decodedArray = (unsigned  short *) malloc((decoded.size() + 1));
+	std::copy(decoded.begin(), decoded.end(), decodedArray);
 
 	return decodedArray;
 }
