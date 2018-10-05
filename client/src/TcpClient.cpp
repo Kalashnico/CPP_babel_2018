@@ -17,6 +17,7 @@ TcpClient::TcpClient()
 TcpClient::~TcpClient()
 {
 	_socket.disconnectFromHost();
+	_socket.close();
 }
 
 bool TcpClient::send(protocol::connectionMessage &message) noexcept
