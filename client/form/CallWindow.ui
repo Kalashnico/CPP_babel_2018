@@ -60,7 +60,7 @@
        <item row="0" column="3" alignment="Qt::AlignHCenter">
         <widget class="QPushButton" name="HangUpButton">
          <property name="text">
-          <string>Raccrocher</string>
+          <string>Hang up</string>
          </property>
         </widget>
        </item>

@@ -3,6 +3,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include <string>
+#include "MainWindow.hpp"
 #include "TcpClient.hpp"
 
 namespace Ui {
@@ -23,8 +24,7 @@ class LoginWindow : public QMainWindow
 	private:
 		Ui::LoginWindow *ui;
 		tcpclient::TcpClient *_tcpClient;
-
-		std::string getInternetIP() const noexcept;
+		MainWindow *_mainWindow;
 };
 
 #endif // LOGINWINDOW_H

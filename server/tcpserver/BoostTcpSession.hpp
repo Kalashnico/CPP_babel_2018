@@ -14,7 +14,7 @@ namespace tcpserver {
 
 class BoostTcpSession : public std::enable_shared_from_this<BoostTcpSession> {
 	public:
-		BoostTcpSession(boost::asio::ip::tcp::socket);
+		BoostTcpSession(boost::asio::ip::tcp::socket, data::Data*);
 		~BoostTcpSession();
 
 		void start() noexcept;
@@ -23,14 +23,17 @@ class BoostTcpSession : public std::enable_shared_from_this<BoostTcpSession> {
 	private:
 		boost::asio::ip::tcp::socket _socket;
 		protocol::Protocol _protocol;
-		data::Data _data;
+		data::Data *_data;
 
 		std::string _clientIp;
 
 		protocol::PACKET_BUFFER _packet;
 
+		const char *headerNames[7] = { "CONNECT", "DISCONNECT", "GET_CONTACTS", "REQUEST_CALL", "NO_REPLY", "END_CALL", "SERVER_RESPONSE" };
+
 		void readPacket() noexcept;
 		void writePacket(protocol::serverMessage&) noexcept;
+		void writeInfoResponsePacket(protocol::infoResponseMessage, bool) noexcept;
 };
 
 }
