@@ -1,230 +1,89 @@
-/** @file paex_read_write_wire.c
-	@ingroup examples_src
-	@brief Tests full duplex blocking I/O by passing input straight to output.
-	@author Bjorn Roche. XO Audio LLC for Z-Systems Engineering.
-    @author based on code by: Phil Burk  http://www.softsynth.com
-    @author based on code by: Ross Bencina rossb@audiomulch.com
-*/
-/*
- * $Id: patest_read_record.c 757 2004-02-13 07:48:10Z rossbencina $
- *
- * This program uses the PortAudio Portable Audio Library.
- * For more information see: http://www.portaudio.com
- * Copyright (c) 1999-2000 Ross Bencina and Phil Burk
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files
- * (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge,
- * publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
- * ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
- * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
-/*
- * The text above constitutes the entire PortAudio license; however, 
- * the PortAudio community also makes the following non-binding requests:
- *
- * Any person wishing to distribute modifications to the Software is
- * requested to send the modifications to the original developer so that
- * they can be incorporated into the canonical version. It is also 
- * requested that these non-binding requests be included along with the 
- * license above.
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "portaudio.h"
-
-/* #define SAMPLE_RATE  (17932) // Test failure to open with this value. */
-#define SAMPLE_RATE  (48000)
-#define FRAMES_PER_BUFFER ((200 * SAMPLE_RATE) / 1000)
-#define NUM_CHANNELS    (2)
-#define NUM_SECONDS     (60)
-/* #define DITHER_FLAG     (paDitherOff)  */
-#define DITHER_FLAG     (0) /**/
-
-/* @todo Underflow and overflow is disabled until we fix priming of blocking write. */
-#define CHECK_OVERFLOW  (0)
-#define CHECK_UNDERFLOW  (0)
-
-
-/* Select sample format. */
-#if 0
-#define PA_SAMPLE_TYPE  paFloat32
-#define SAMPLE_SIZE (4)
-#define SAMPLE_SILENCE  (0.0f)
-#define CLEAR(a) memset( (a), 0, FRAMES_PER_BUFFER * NUM_CHANNELS * SAMPLE_SIZE )
-#define PRINTF_S_FORMAT "%.8f"
-#elif 0
-#define PA_SAMPLE_TYPE  paInt16
-#define SAMPLE_SIZE (2)
-#define SAMPLE_SILENCE  (0)
-#define CLEAR(a) memset( (a), 0,  FRAMES_PER_BUFFER * NUM_CHANNELS * SAMPLE_SIZE )
-#define PRINTF_S_FORMAT "%d"
-#elif 1
-#define PA_SAMPLE_TYPE  paInt24
-#define SAMPLE_SIZE (3)
-#define SAMPLE_SILENCE  (0)
-#define CLEAR(a) memset( (a), 0,  FRAMES_PER_BUFFER * NUM_CHANNELS * SAMPLE_SIZE )
-#define PRINTF_S_FORMAT "%d"
-#elif 0
-#define PA_SAMPLE_TYPE  paInt8
-#define SAMPLE_SIZE (1)
-#define SAMPLE_SILENCE  (0)
-#define CLEAR(a) memset( (a), 0,  FRAMES_PER_BUFFER * NUM_CHANNELS * SAMPLE_SIZE )
-#define PRINTF_S_FORMAT "%d"
-#else
-#define PA_SAMPLE_TYPE  paUInt8
-#define SAMPLE_SIZE (1)
-#define SAMPLE_SILENCE  (128)
-#define CLEAR( a ) { \
-    int i; \
-    for( i=0; i<FRAMES_PER_BUFFER*NUM_CHANNELS; i++ ) \
-        ((unsigned char *)a)[i] = (SAMPLE_SILENCE); \
-}
-#define PRINTF_S_FORMAT "%d"
-#endif
-
-
 #include "CodecManager.hpp"
 
+#define SAMPLE_RATE  (8000)
+#define FRAMES_PER_BUFFER (20 * SAMPLE_RATE / 1000)
+#define NUM_CHANNELS    (1)
 
-/*******************************************************************/
-int main(void);
-int main(void)
+#define PA_SAMPLE_TYPE  paInt16
+#define SAMPLE_SIZE (16)
+#define SAMPLE_SILENCE  (0)
+#define CLEAR(a) memset( (a), 0,  FRAMES_PER_BUFFER * NUM_CHANNELS * SAMPLE_SIZE )
+#define PRINTF_S_FORMAT "%d"
+
+CodecManager *_codecManager;
+
+static int paCallback( const void *inputBuffer, void *outputBuffer,
+                         unsigned long framesPerBuffer,
+                         const PaStreamCallbackTimeInfo* timeInfo,
+                         PaStreamCallbackFlags statusFlags,
+                         void *userData )
 {
 
-        CodecManager codecManager = CodecManager(NUM_CHANNELS, FRAMES_PER_BUFFER, SAMPLE_RATE);
+	(void) timeInfo;
+	(void) statusFlags;
+	(void) userData;
 
-    PaStreamParameters inputParameters, outputParameters;
-    PaStream *stream = NULL;
-    PaError err;
-    unsigned short *sampleBlock;
-    int i;
-    int numBytes;
-    
-    
-    printf("patest_read_write_wire.c\n"); fflush(stdout);
+	unsigned char *in = (unsigned char*) inputBuffer;
+	unsigned char *out = (unsigned char*) outputBuffer;
 
-    numBytes = FRAMES_PER_BUFFER * NUM_CHANNELS * SAMPLE_SIZE ;
-    sampleBlock = (unsigned short *) malloc( numBytes );
-	memset(sampleBlock, 0, numBytes);
-    if( sampleBlock == NULL )
-    {
-        printf("Could not allocate record array.\n");
-        exit(1);
-    }
-    CLEAR( sampleBlock );
+	auto encodedSound = _codecManager->encode(in);
+	auto decodedSound = _codecManager->decode(encodedSound);
 
-    err = Pa_Initialize();
-    if( err != paNoError ) goto error;
+	for (unsigned long i = 0; i < framesPerBuffer; i++)
+		out[i] = decodedSound[i];
 
-    inputParameters.device = Pa_GetDefaultInputDevice(); /* default input device */
-    printf( "Input device # %d.\n", inputParameters.device );
-    printf( "Input LL: %g s\n", Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency );
-    printf( "Input HL: %g s\n", Pa_GetDeviceInfo( inputParameters.device )->defaultHighInputLatency );
-    inputParameters.channelCount = NUM_CHANNELS;
-    inputParameters.sampleFormat = PA_SAMPLE_TYPE;
-    inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency ;
-    inputParameters.hostApiSpecificStreamInfo = NULL;
+	return paContinue;
+}
 
-    outputParameters.device = Pa_GetDefaultOutputDevice(); /* default output device */
-    printf( "Output device # %d.\n", outputParameters.device );
-    printf( "Output LL: %g s\n", Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency );
-    printf( "Output HL: %g s\n", Pa_GetDeviceInfo( outputParameters.device )->defaultHighOutputLatency );
-    outputParameters.channelCount = NUM_CHANNELS;
-    outputParameters.sampleFormat = PA_SAMPLE_TYPE;
-    outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultHighOutputLatency;
-    outputParameters.hostApiSpecificStreamInfo = NULL;
+int main(void)
+{
+	PaStreamParameters inputParameters, outputParameters;
+	PaStream *stream = NULL;
 
-    /* -- setup -- */
+	_codecManager = new CodecManager(NUM_CHANNELS, FRAMES_PER_BUFFER, SAMPLE_RATE);
 
-   err = Pa_OpenStream(
-              &stream,
-              &inputParameters,
-              &outputParameters,
-              SAMPLE_RATE,
-              FRAMES_PER_BUFFER,
-              paClipOff,      /* we won't output out of range samples so don't bother clipping them */
-              NULL, /* no callback, use blocking API */
-              NULL ); /* no callback, so no callback userData */
-    if( err != paNoError ) goto error;
+	Pa_Initialize();
 
-    err = Pa_StartStream( stream );
-    if( err != paNoError ) goto error;
-    printf("Wire on. Will run %d seconds.\n", NUM_SECONDS); fflush(stdout);
 
-    for( i=0; i<(NUM_SECONDS*SAMPLE_RATE)/FRAMES_PER_BUFFER; ++i )
-    {
-       err = Pa_WriteStream( stream, sampleBlock, FRAMES_PER_BUFFER );
-       if( err && CHECK_UNDERFLOW ) goto xrun;
-            auto encodedSound = codecManager.encode(sampleBlock);
-            sampleBlock = codecManager.decode(encodedSound);
+	inputParameters.device = Pa_GetDefaultInputDevice();
+	printf( "Input device # %d.\n", inputParameters.device );
+	printf( "Input LL: %g s\n", Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency );
+	printf( "Input HL: %g s\n", Pa_GetDeviceInfo( inputParameters.device )->defaultHighInputLatency );
+	inputParameters.channelCount = NUM_CHANNELS;
+	inputParameters.sampleFormat = PA_SAMPLE_TYPE;
+	inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency ;
+	inputParameters.hostApiSpecificStreamInfo = NULL;
 
-	// Send and read UDP here
+	outputParameters.device = Pa_GetDefaultOutputDevice();
+	printf( "Output device # %d.\n", outputParameters.device );
+	printf( "Output LL: %g s\n", Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency );
+	printf( "Output HL: %g s\n", Pa_GetDeviceInfo( outputParameters.device )->defaultHighOutputLatency );
+	outputParameters.channelCount = NUM_CHANNELS;
+	outputParameters.sampleFormat = PA_SAMPLE_TYPE;
+	outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowInputLatency;
+	outputParameters.hostApiSpecificStreamInfo = NULL;
 
-       err = Pa_ReadStream( stream, sampleBlock, FRAMES_PER_BUFFER );
-       if( err && CHECK_OVERFLOW ) goto xrun;
-    }
-    err = Pa_StopStream( stream );
-    if( err != paNoError ) goto error;
+	Pa_OpenStream(
+		&stream,
+		&inputParameters,
+		&outputParameters,
+		SAMPLE_RATE,
+		FRAMES_PER_BUFFER,
+		paClipOff,
+		paCallback,
+		NULL);
 
-    CLEAR( sampleBlock );
-/*
-    err = Pa_StartStream( stream );
-    if( err != paNoError ) goto error;
-    printf("Wire on. Interrupt to stop.\n"); fflush(stdout);
-    while( 1 )
-    {
-       err = Pa_WriteStream( stream, sampleBlock, FRAMES_PER_BUFFER );
-       if( err ) goto xrun;
-       err = Pa_ReadStream( stream, sampleBlock, FRAMES_PER_BUFFER );
-       if( err ) goto xrun;
-    }
-    err = Pa_StopStream( stream );
-    if( err != paNoError ) goto error;
-    Pa_CloseStream( stream );
-*/
-    free( sampleBlock );
+	Pa_StartStream(stream);
 
-    Pa_Terminate();
-    return 0;
+	while (Pa_IsStreamActive(stream))
+		Pa_Sleep(20);
 
-xrun:
-    if( stream ) {
-       Pa_AbortStream( stream );
-       Pa_CloseStream( stream );
-    }
-    free( sampleBlock );
-    Pa_Terminate();
-    if( err & paInputOverflow )
-       fprintf( stderr, "Input Overflow.\n" );
-    if( err & paOutputUnderflow )
-       fprintf( stderr, "Output Underflow.\n" );
-    return -2;
+	Pa_StopStream(stream);
+	Pa_CloseStream(stream);
 
-error:
-    if( stream ) {
-       Pa_AbortStream( stream );
-       Pa_CloseStream( stream );
-    }
-    free( sampleBlock );
-    Pa_Terminate();
-    fprintf( stderr, "An error occured while using the portaudio stream\n" );
-    fprintf( stderr, "Error number: %d\n", err );
-    fprintf( stderr, "Error message: %s\n", Pa_GetErrorText( err ) );
-    return -1;
+	Pa_Terminate();
 }

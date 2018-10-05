@@ -12,7 +12,7 @@ CodecManager::CodecManager(int channels, int bufferSize, int sampleRate)
 
 	int err ;
 
-	_encoder = opus_encoder_create(sampleRate, channels, OPUS_APPLICATION_AUDIO, &err);
+	_encoder = opus_encoder_create(sampleRate, channels, OPUS_APPLICATION_VOIP, &err);
 
 	if (err != OPUS_OK)
 		std::cerr << "Failed to create opus encoder" << std::endl;
@@ -25,13 +25,13 @@ CodecManager::CodecManager(int channels, int bufferSize, int sampleRate)
 
 }
 
-EncodedSound CodecManager::encode(unsigned short *sound)
+EncodedSound CodecManager::encode(unsigned char *sound)
 {
-	std::vector<unsigned short> sampleBlockv(sound, sound + sizeof sound / sizeof sound[0]);
+	std::vector<unsigned char> sampleBlockv(sound, sound + sizeof sound / sizeof sound[0]);
 
 	EncodedSound encodedStruct;
 
-	encodedStruct.encoded.resize(_bufferSize * _channels);
+	encodedStruct.encoded.resize(_bufferSize * _channels * _sampleRate);
 
 	_bytes = opus_encode(_encoder, reinterpret_cast<opus_int16 const *>(sampleBlockv.data()),
 			     _bufferSize, encodedStruct.encoded.data(), encodedStruct.encoded.size());
@@ -42,19 +42,19 @@ EncodedSound CodecManager::encode(unsigned short *sound)
 	return encodedStruct;
 }
 
-unsigned short *CodecManager::decode(EncodedSound sound)
+unsigned char *CodecManager::decode(EncodedSound sound)
 {
 
-	std::vector<unsigned short> decoded;
+	std::vector<unsigned char> decoded;
 
-	decoded.resize(_bufferSize * _channels);
-	opus_int32 dec_bytes = opus_decode(_decoder, sound.encoded.data(), sound.bytes,
-					   reinterpret_cast<opus_int16 *>(sound.encoded.data()), _bufferSize, 0);
+	decoded.resize(_bufferSize * _channels * _sampleRate);
+	auto dec_bytes = opus_decode(_decoder, sound.encoded.data(), sound.bytes,
+					   reinterpret_cast<opus_int16 *>(decoded.data()), _bufferSize, 0);
 
 	if (dec_bytes < 0)
 		std::cerr << "Failed to decode sound" << std::endl;
 
-	auto decodedArray = (unsigned  short *) malloc((decoded.size() + 1));
+	unsigned char *decodedArray = (unsigned char*) malloc(_bufferSize * _channels * _sampleRate);
 	std::copy(decoded.begin(), decoded.end(), decodedArray);
 
 	return decodedArray;

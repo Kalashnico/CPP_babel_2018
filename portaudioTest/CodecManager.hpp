@@ -18,8 +18,8 @@ class CodecManager {
 	public:
 		CodecManager(int channels, int bufferSize, int sampleRate);
 		~CodecManager() = default;
-		EncodedSound encode(unsigned short *sound);
-		unsigned short *decode(EncodedSound sound);
+		EncodedSound encode(unsigned char *sound);
+		unsigned char *decode(EncodedSound sound);
 
 	private:
 		int _channels;
