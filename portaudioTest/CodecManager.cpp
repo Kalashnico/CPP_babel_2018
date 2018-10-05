@@ -18,7 +18,7 @@ CodecManager::CodecManager(int channels, int bufferSize, int sampleRate)
 		std::cerr << "Failed to create opus encoder" << std::endl;
 
 
-	_decoder = opus_decoder_create(sampleRate, channels, &err);
+	_decoder = opus_decoder_create(sampleRate, channels, NULL);
 
 	if (err != OPUS_OK)
 		std::cerr << "Failed to create opus decoder" << std::endl;

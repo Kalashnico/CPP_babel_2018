@@ -4,7 +4,7 @@
 #include "portaudio.h"
 #include "CodecManager.hpp"
 
-#define SAMPLE_RATE  (8000)
+#define SAMPLE_RATE  (16000)
 #define FRAMES_PER_BUFFER (20 * SAMPLE_RATE / 1000)
 #define NUM_CHANNELS    (1)
 
@@ -34,7 +34,7 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
 	auto decodedSound = _codecManager->decode(encodedSound);
 
 	for (unsigned long i = 0; i < framesPerBuffer; i++)
-		out[i] = decodedSound[i];
+		out[i] = in[i];
 
 	return paContinue;
 }
@@ -79,8 +79,7 @@ int main(void)
 
 	Pa_StartStream(stream);
 
-	while (Pa_IsStreamActive(stream))
-		Pa_Sleep(20);
+	while (Pa_IsStreamActive(stream));
 
 	Pa_StopStream(stream);
 	Pa_CloseStream(stream);
