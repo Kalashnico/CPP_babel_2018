@@ -88,9 +88,9 @@ messageType Protocol::getMessageType(PACKET_BUFFER &buffer) const noexcept
 		type = CONNECTION;
 	else if (headerValue == 2)
 		type = INFO;
-	else if (headerValue >= 3 && headerValue <= 4)
+	else if (headerValue >= 3 && headerValue <= 5)
 		type = CALL;
-	else if (headerValue == 5)
+	else if (headerValue == 6)
 		type = SERVER;
 
 	return type;
