@@ -7,37 +7,46 @@
 #include "UdpClient.hpp"
 
 namespace Ui {
-class MainWindow;
+	class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
-    Q_OBJECT
+class MainWindow : public QMainWindow {
+	Q_OBJECT
 
-public:
-    explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
-    void setTcpClient(tcpclient::TcpClient *tcp);
-    void setUsername(const std::string &username);
-    void setPort(unsigned short port);
-    void refreshContacts();
+	public:
+		explicit MainWindow(QWidget *parent = nullptr);
 
-private slots:
-    void on_Contacts_itemClicked(QListWidgetItem *item);
-    void on_RefreshButton_clicked();
-    void CallAction();
+		~MainWindow();
 
-private:
-    Ui::MainWindow *ui;
-    QString _selectedContact;
-    QStringList _contacts;
+		void setTcpClient(tcpclient::TcpClient *tcp);
 
-    protocol::Protocol *_protocol;
-    tcpclient::TcpClient *_tcpClient;
-    udpclient::UdpClient *_udpClient;
-    std::string _username;
-    unsigned short _port;
+		void setUsername(const std::string &username);
 
+		void setPort(unsigned short port);
+
+		void refreshContacts();
+
+	private slots:
+
+		void on_Contacts_itemClicked(QListWidgetItem *item);
+
+		void on_RefreshButton_clicked();
+
+		void CallAction();
+
+	private:
+		Ui::MainWindow *ui;
+		QString _selectedContact;
+		QStringList _contacts;
+
+		protocol::Protocol *_protocol;
+		tcpclient::TcpClient *_tcpClient;
+		udpclient::UdpClient *_udpClient;
+		std::string _username;
+		unsigned short _port;
+		std::thread *_thread;
+
+		void backgroundThread();
 };
 
 #endif // MAINWINDOW_H

@@ -7,18 +7,21 @@
 #include "TcpClient.hpp"
 
 namespace Ui {
-class LoginWindow;
+	class LoginWindow;
 }
 
-class LoginWindow : public QMainWindow
-{
+class LoginWindow : public QMainWindow {
 	Q_OBJECT
 
 	public:
-		explicit LoginWindow(tcpclient::TcpClient*, QWidget *parent = nullptr);
+		explicit LoginWindow(tcpclient::TcpClient *,
+			QWidget *parent = nullptr
+		);
+
 		~LoginWindow();
 
 	private slots:
+
 		void on_OkButton_clicked();
 
 	private:

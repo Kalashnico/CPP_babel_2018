@@ -12,23 +12,26 @@
 
 namespace tcpclient {
 
-class TcpClient {
-	public:
-		TcpClient();
-		~TcpClient();
+	class TcpClient {
+		public:
+			TcpClient();
 
-		bool send(protocol::connectionMessage&) noexcept;
-		bool send(protocol::callMessage&) noexcept;
-		bool send(protocol::infoMessage&) noexcept;
+			~TcpClient();
 
-		protocol::serverMessage receive() noexcept;
-		protocol::infoResponseMessage receiveClients() noexcept;
+			bool send(protocol::connectionMessage &) noexcept;
 
-	private:
-		protocol::Protocol _protocol;
-		QTcpSocket _socket;
+			bool send(protocol::callMessage &) noexcept;
 
-		bool send(protocol::PACKET&) noexcept;
-};
+			bool send(protocol::infoMessage &) noexcept;
 
+			protocol::serverMessage receive() noexcept;
+
+			protocol::infoResponseMessage receiveClients() noexcept;
+
+		private:
+			protocol::Protocol _protocol;
+			QTcpSocket _socket;
+
+			bool send(protocol::PACKET &) noexcept;
+	};
 }

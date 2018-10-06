@@ -78,6 +78,7 @@ void UdpClient::sendAudioDatagram(char *data, unsigned short frameBuffer) noexce
 	out.writeRawData((char*)packet, 1024);
 
 	_socket.writeDatagram(datagram, datagram.size(), QHostAddress(QString::fromStdString(_currentContactIp)), _currentContactPort);
+
 }
 
 callRequest UdpClient::readPendingRequestDatagrams() noexcept

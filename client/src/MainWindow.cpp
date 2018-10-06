@@ -9,13 +9,11 @@
 #include <QtWidgets/QMenu>
 #include <boost/algorithm/string.hpp>
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    _protocol(new protocol::Protocol()),
-    _tcpClient(nullptr)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
+	ui(new Ui::MainWindow), _protocol(new protocol::Protocol()),
+	_tcpClient(nullptr)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
 }
 
 MainWindow::~MainWindow()
@@ -34,20 +32,28 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
+void MainWindow::backgroundThread()
+{
+	while (1) {
+		sleep(1);
+	}
+}
+
 void MainWindow::setTcpClient(tcpclient::TcpClient *tcp)
 {
-    this->_tcpClient = tcp;
-    this->_udpClient = new udpclient::UdpClient(this->_username, this->_port);
+	this->_tcpClient = tcp;
+	this->_udpClient = new udpclient::UdpClient(this->_username, this->_port);
+	this->_thread = new std::thread(&MainWindow::backgroundThread, this);
 }
 
 void MainWindow::setUsername(const std::string &username)
 {
-    this->_username = username;
+	this->_username = username;
 }
 
 void MainWindow::setPort(unsigned short port)
 {
-    this->_port = port;
+	this->_port = port;
 }
 
 void MainWindow::refreshContacts()
@@ -65,7 +71,9 @@ void MainWindow::on_RefreshButton_clicked()
 	std::string contacts(response.contactNames);
 
 	std::vector<std::string> splitContacts;
-	boost::split(splitContacts, contacts, [](char c){return c == '|';});
+	boost::split(splitContacts, contacts, [](char c) {
+		return c == '|';
+	});
 
 	_contacts.clear();
 	for (auto contact : splitContacts) {
@@ -79,12 +87,12 @@ void MainWindow::on_RefreshButton_clicked()
 
 void MainWindow::on_Contacts_itemClicked(QListWidgetItem *item)
 {
-    this->_selectedContact = item->text();
-    QMenu contextMenu(tr("Context menu"), this);
-    QAction action1("Call", this);
-    contextMenu.addAction(&action1);
-    connect(&action1, &QAction::triggered, this, &MainWindow::CallAction);
-    contextMenu.exec(QCursor::pos());
+	this->_selectedContact = item->text();
+	QMenu contextMenu(tr("Context menu"), this);
+	QAction action1("Call", this);
+	contextMenu.addAction(&action1);
+	connect(&action1, &QAction::triggered, this, &MainWindow::CallAction);
+	contextMenu.exec(QCursor::pos());
 }
 
 void MainWindow::CallAction()
@@ -94,10 +102,11 @@ void MainWindow::CallAction()
 	protocol::callMessage callRequestMessage;
 	callRequestMessage.headerId = protocol::REQUEST_CALL;
 	strcpy(callRequestMessage.clientName, _username.c_str());
-	strcpy(callRequestMessage.contactName, _selectedContact.toStdString().c_str());
+	strcpy(callRequestMessage.contactName,
+		_selectedContact.toStdString().c_str());
 	_tcpClient->send(callRequestMessage);
 
-	auto serverReponse =  _tcpClient->receive();
+	auto serverReponse = _tcpClient->receive();
 	if (serverReponse.response == 1) {
 		std::string contact(_selectedContact.toStdString());
 		std::string ip(serverReponse.ip);
