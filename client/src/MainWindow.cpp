@@ -39,15 +39,33 @@ MainWindow::~MainWindow()
 void MainWindow::backgroundThread()
 {
 	while (1) {
-		auto datagram = this->_udpClient->readPendingRequestDatagrams();
 
-		if (datagram.caller.length() == 0)
-			continue;
+		if (!_calling && !_inCall) {
+			auto datagram = this->_udpClient->readPendingRequestDatagrams();
 
-		std::cout << "Call request from: " << datagram.caller << std::endl;
-		this->_callReceiveWindow->setName(datagram.caller);
-		this->_callWindow->setName(datagram.caller);
-		this->_callReceiveWindow->show();
+			if (datagram.caller.length() == 0)
+				continue;
+
+			this->_calling = true;
+
+			this->_udpClient->setContactInfo(datagram.caller, datagram.ip, datagram.port);
+
+			this->_callReceiveWindow->setName(datagram.caller);
+			this->_callReceiveWindow->setUdpClient(this->_udpClient);
+			this->_callWindow->setUsername(this->_username);
+			this->_callWindow->setContactName(datagram.caller);
+			this->_callWindow->setTcpClient(this->_tcpClient);
+			this->_callReceiveWindow->show();
+		}
+
+		if (_calling) {
+			auto response = this->_udpClient->readPendingResponseDatagrams();
+			if (response != -1) {
+				if (response == 1)
+					_inCall = true;
+				_calling = false;
+			}
+		}
 	}
 }
 
@@ -110,6 +128,8 @@ void MainWindow::on_Contacts_itemClicked(QListWidgetItem *item)
 void MainWindow::CallAction()
 {
 	this->_callWindow = new CallWindow(this->_selectedContact, this);
+	this->_callWindow->setTcpClient(this->_tcpClient);
+	this->_callWindow->setUsername(this->_username);
 
 	protocol::callMessage callRequestMessage;
 	callRequestMessage.headerId = protocol::REQUEST_CALL;
