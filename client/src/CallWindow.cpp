@@ -31,10 +31,29 @@ void CallWindow::on_MuteCheckBox_stateChanged(int value)
 void CallWindow::on_HangUpButton_clicked()
 {
 	// End Call
+
+	protocol::callMessage endCallMessage;
+	endCallMessage.headerId = protocol::END_CALL;
+	strcpy(endCallMessage.clientName, _username.c_str());
+	strcpy(endCallMessage.contactName, _contactCalled.toStdString().c_str());
+	_tcpClient->send(endCallMessage);
+	_tcpClient->receive();
+
 	this->close();
 }
 
-void CallWindow::setName(std::string name)
+void CallWindow::setUsername(std::string &username)
+{
+	this->_username = username;
+}
+
+void CallWindow::setContactName(std::string &name)
 {
 	this->setWindowTitle(name.c_str());
+	this->_contactCalled = QString(name.c_str());
+}
+
+void CallWindow::setTcpClient(tcpclient::TcpClient *tcpClient)
+{
+	this->_tcpClient = tcpClient;
 }
