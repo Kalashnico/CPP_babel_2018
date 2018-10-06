@@ -25,6 +25,7 @@ class CodecManager {
 		int _channels;
 		int _bufferSize;
 		int _sampleRate;
+		int _maxFrameSize;
 
 		OpusEncoder *_encoder;
 		OpusDecoder *_decoder;

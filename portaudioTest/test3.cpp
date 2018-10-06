@@ -5,7 +5,7 @@
 #include "CodecManager.hpp"
 
 #define SAMPLE_RATE  (16000)
-#define FRAMES_PER_BUFFER (20 * SAMPLE_RATE / 1000)
+#define FRAMES_PER_BUFFER (120 * SAMPLE_RATE / 1000)
 #define NUM_CHANNELS    (1)
 
 #define PA_SAMPLE_TYPE  paInt16
@@ -34,7 +34,7 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
 	auto decodedSound = _codecManager->decode(encodedSound);
 
 	for (unsigned long i = 0; i < framesPerBuffer; i++)
-		out[i] = in[i];
+		out[i] = decodedSound[i];
 
 	return paContinue;
 }
@@ -79,7 +79,8 @@ int main(void)
 
 	Pa_StartStream(stream);
 
-	while (Pa_IsStreamActive(stream));
+	while (Pa_IsStreamActive(stream))
+		Pa_Sleep(120);
 
 	Pa_StopStream(stream);
 	Pa_CloseStream(stream);
