@@ -37,7 +37,7 @@ MainWindow::~MainWindow()
 void MainWindow::setTcpClient(tcpclient::TcpClient *tcp)
 {
     this->_tcpClient = tcp;
-    this->_udpClient = new udpclient::UdpClient(this->_port);
+    this->_udpClient = new udpclient::UdpClient(this->_username, this->_port);
 }
 
 void MainWindow::setUsername(const std::string &username)
@@ -99,9 +99,10 @@ void MainWindow::CallAction()
 
 	auto serverReponse =  _tcpClient->receive();
 	if (serverReponse.response == 1) {
+		std::string contact(_selectedContact.toStdString());
 		std::string ip(serverReponse.ip);
-		_udpClient->setContactInfo(ip, serverReponse.port);
-		_udpClient->sendDatagram();
+		_udpClient->setContactInfo(contact, ip, serverReponse.port);
+		_udpClient->sendCallRequestDatagram();
 	}
 
 	callwindow->show();
