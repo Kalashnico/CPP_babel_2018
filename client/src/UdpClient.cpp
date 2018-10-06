@@ -28,6 +28,11 @@ void UdpClient::setContactInfo(std::string &contact, std::string &ip, unsigned s
 	_currentContactPort = port;
 }
 
+std::string UdpClient::getContactName() const noexcept
+{
+	return _currentContact;
+}
+
 void UdpClient::sendCallRequestDatagram() noexcept
 {
 	QByteArray datagram;

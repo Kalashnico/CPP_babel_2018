@@ -33,6 +33,7 @@ class UdpClient {
 		protocol::audioMessage readPendingAudioDatagrams() noexcept;
 
 		void setContactInfo(std::string&, std::string&, unsigned short) noexcept;
+		std::string getContactName() const noexcept;
 
 	private:
 		protocol::Protocol _protocol;
