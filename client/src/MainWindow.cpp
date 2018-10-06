@@ -8,13 +8,17 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QMenu>
 #include <boost/algorithm/string.hpp>
+#include <CallReceiveWindow.hpp>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 	ui(new Ui::MainWindow), _protocol(new protocol::Protocol()),
 	_tcpClient(nullptr)
 {
 	ui->setupUi(this);
+	this->_callWindow = new CallWindow("", this);
+	this->_callReceiveWindow = new CallReceiveWindow("", this->_callWindow);
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -41,6 +45,9 @@ void MainWindow::backgroundThread()
 			continue;
 
 		std::cout << "Call request from: " << datagram.caller << std::endl;
+		this->_callReceiveWindow->setName(datagram.caller);
+		this->_callWindow->setName(datagram.caller);
+		this->_callReceiveWindow->show();
 	}
 }
 
@@ -102,7 +109,7 @@ void MainWindow::on_Contacts_itemClicked(QListWidgetItem *item)
 
 void MainWindow::CallAction()
 {
-	auto callwindow = new CallWindow(this->_selectedContact, this);
+	this->_callWindow = new CallWindow(this->_selectedContact, this);
 
 	protocol::callMessage callRequestMessage;
 	callRequestMessage.headerId = protocol::REQUEST_CALL;
@@ -119,6 +126,6 @@ void MainWindow::CallAction()
 		_udpClient->sendCallRequestDatagram();
 
 		_calling = true;
-		callwindow->show();
+		this->_callWindow->show();
 	}
 }

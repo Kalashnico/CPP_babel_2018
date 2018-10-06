@@ -33,3 +33,8 @@ void CallWindow::on_HangUpButton_clicked()
 	// End Call
 	this->close();
 }
+
+void CallWindow::setName(std::string name)
+{
+	this->setWindowTitle(name.c_str());
+}
