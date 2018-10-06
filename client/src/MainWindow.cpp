@@ -3,6 +3,7 @@
 #include "ui_MainWindow.h"
 #include "moc_MainWindow.cpp"
 #include <iostream>
+#include <chrono>
 #include <QtWidgets/QListView>
 #include <QtCore/QStringListModel>
 #include <QtWidgets/QAction>
@@ -65,6 +66,22 @@ void MainWindow::backgroundThread()
 					_inCall = true;
 				_calling = false;
 			}
+
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+			if (this->_timeout++ == 10) {
+				this->_timeout = 0;
+				_calling = false;
+
+				protocol::callMessage noReplyMessage;
+				noReplyMessage.headerId = protocol::NO_REPLY;
+				strcpy(noReplyMessage.clientName, _username.c_str());
+				strcpy(noReplyMessage.contactName, this->_udpClient->getContactName().c_str());
+				_tcpClient->send(noReplyMessage);
+				_tcpClient->receive();
+
+				this->_callWindow->close();
+			}
+
 		}
 	}
 }
@@ -146,6 +163,7 @@ void MainWindow::CallAction()
 		_udpClient->sendCallRequestDatagram();
 
 		_calling = true;
+		_timeout = 0;
 		this->_callWindow->show();
 	}
 }
