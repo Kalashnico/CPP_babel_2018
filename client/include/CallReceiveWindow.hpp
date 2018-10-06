@@ -4,23 +4,27 @@
 #include <QtWidgets/QMainWindow>
 
 namespace Ui {
-class CallReceiveWindow;
+	class CallReceiveWindow;
 }
 
-class CallReceiveWindow : public QMainWindow
-{
-    Q_OBJECT
+class CallReceiveWindow : public QMainWindow {
+	Q_OBJECT
 
-public:
-    explicit CallReceiveWindow(std::string const &name,QWidget *parent = nullptr);
-    ~CallReceiveWindow();
+	public:
+		explicit CallReceiveWindow(std::string const &name,
+			QWidget *parent = nullptr
+		);
 
-private slots:
-    void on_AcceptButton_clicked();
-    void on_DeclineButton_clicked();
+		~CallReceiveWindow();
 
-private:
-    Ui::CallReceiveWindow *ui;
+	private slots:
+
+		void on_AcceptButton_clicked();
+
+		void on_DeclineButton_clicked();
+
+	private:
+		Ui::CallReceiveWindow *ui;
 };
 
 #endif // CALLRECEIVEWINDOW_H

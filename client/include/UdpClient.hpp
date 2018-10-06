@@ -12,24 +12,26 @@
 
 namespace udpclient {
 
-class UdpClient {
-	public:
-		UdpClient(unsigned short);
-		~UdpClient();
+	class UdpClient {
+		public:
+			UdpClient(unsigned short);
 
-		void sendDatagram() noexcept;
-		void readPendingDatagrams() noexcept;
+			~UdpClient();
 
-		void setContactInfo(std::string&, unsigned short) noexcept;
+			void sendDatagram() noexcept;
 
-	private:
-		protocol::Protocol _protocol;
-		QUdpSocket _socket;
+			void readPendingDatagrams() noexcept;
 
-		unsigned short _myPort;
+			void setContactInfo(std::string &, unsigned short
+			) noexcept;
 
-		std::string _currentContactIp;
-		unsigned short _currentContactPort;
-};
+		private:
+			protocol::Protocol _protocol;
+			QUdpSocket _socket;
 
+			unsigned short _myPort;
+
+			std::string _currentContactIp;
+			unsigned short _currentContactPort;
+	};
 }
