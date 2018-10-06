@@ -108,7 +108,7 @@ callRequest UdpClient::readPendingRequestDatagrams() noexcept
 	return request;
 }
 
-bool UdpClient::readPendingResponseDatagrams() noexcept
+char UdpClient::readPendingResponseDatagrams() noexcept
 {
 	if (_socket.hasPendingDatagrams()) {
 		auto datagram = _socket.receiveDatagram();
@@ -117,13 +117,10 @@ bool UdpClient::readPendingResponseDatagrams() noexcept
 			packet[i] = datagram.data()[i];
 
 		auto decodedMessage = _protocol.decodeServerMessage(packet);
-		if (decodedMessage.response == 1)
-			return true;
-		else
-			return false;
+		return decodedMessage.response;
 	}
 
-	return false;
+	return -1;
 }
 
 protocol::audioMessage UdpClient::readPendingAudioDatagrams() noexcept
