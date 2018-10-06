@@ -35,7 +35,12 @@ MainWindow::~MainWindow()
 void MainWindow::backgroundThread()
 {
 	while (1) {
-		sleep(1);
+		auto datagram = this->_udpClient->readPendingRequestDatagrams();
+
+		if (datagram.caller.length == 0)
+			break;
+
+		std::cout << "Call request from: " << datagram.caller << std::endl;
 	}
 }
 
