@@ -12,22 +12,36 @@
 
 namespace udpclient {
 
+
+struct callRequest {
+	std::string caller;
+	std::string ip;
+	unsigned short port;
+};
+
 class UdpClient {
 	public:
-		UdpClient(unsigned short);
+		UdpClient(std::string &username, unsigned short);
 		~UdpClient();
 
-		void sendDatagram() noexcept;
-		void readPendingDatagrams() noexcept;
+		void sendCallRequestDatagram() noexcept;
+		void sendResponseDatagram(bool) noexcept;
+		void sendAudioDatagram(char*, unsigned short) noexcept;
 
-		void setContactInfo(std::string&, unsigned short) noexcept;
+		callRequest readPendingRequestDatagrams() noexcept;
+		bool readPendingResponseDatagrams() noexcept;
+		protocol::audioMessage readPendingAudioDatagrams() noexcept;
+
+		void setContactInfo(std::string&, std::string&, unsigned short) noexcept;
 
 	private:
 		protocol::Protocol _protocol;
 		QUdpSocket _socket;
 
+		std::string _username;
 		unsigned short _myPort;
 
+		std::string _currentContact;
 		std::string _currentContactIp;
 		unsigned short _currentContactPort;
 };

@@ -10,8 +10,8 @@
 
 namespace udpclient {
 
-UdpClient::UdpClient(unsigned short port)
-	: _myPort(port)
+UdpClient::UdpClient(std::string &username, unsigned short port)
+	: _username(username), _myPort(port)
 {
 	_socket.bind(QHostAddress::AnyIPv4, port);
 }
@@ -21,29 +21,117 @@ UdpClient::~UdpClient()
 	_socket.close();
 }
 
-void UdpClient::setContactInfo(std::string &ip, unsigned short port) noexcept
+void UdpClient::setContactInfo(std::string &contact, std::string &ip, unsigned short port) noexcept
 {
+	_currentContact = contact;
 	_currentContactIp = ip;
 	_currentContactPort = port;
 }
 
-void UdpClient::sendDatagram() noexcept
+void UdpClient::sendCallRequestDatagram() noexcept
 {
-	QByteArray datagram = "Cheese";
+	QByteArray datagram;
+	QDataStream out(&datagram, QIODevice::WriteOnly);
+	out.setVersion(QDataStream::Version::Qt_5_11);
 
-	std::cout << "Sending datagram to " << _currentContactIp << ":" << _currentContactPort << std::endl;
+	protocol::callMessage callRequestMessage;
+	callRequestMessage.headerId = protocol::REQUEST_CALL;
+	strcpy(callRequestMessage.clientName, _username.c_str());
+	strcpy(callRequestMessage.contactName, _currentContact.c_str());
+
+	auto packet = _protocol.encode(callRequestMessage);
+	out.writeRawData((char*)packet, 1024);
 
 	_socket.writeDatagram(datagram, datagram.size(), QHostAddress(QString::fromStdString(_currentContactIp)), _currentContactPort);
 }
 
-void UdpClient::readPendingDatagrams() noexcept
+void UdpClient::sendResponseDatagram(bool response) noexcept
+{
+	QByteArray datagram;
+	QDataStream out(&datagram, QIODevice::WriteOnly);
+	out.setVersion(QDataStream::Version::Qt_5_11);
+
+	protocol::serverMessage responseMessage;
+	responseMessage.headerId = protocol::SERVER_RESPONSE;
+	responseMessage.response = response;
+	strcpy(responseMessage.ip, "");
+	responseMessage.port = 0;
+
+	auto packet = _protocol.encode(responseMessage);
+	out.writeRawData((char*)packet, 1024);
+
+	_socket.writeDatagram(datagram, datagram.size(), QHostAddress(QString::fromStdString(_currentContactIp)), _currentContactPort);
+}
+
+void UdpClient::sendAudioDatagram(char *data, unsigned short frameBuffer) noexcept
+{
+	QByteArray datagram;
+	QDataStream out(&datagram, QIODevice::WriteOnly);
+	out.setVersion(QDataStream::Version::Qt_5_11);
+
+	protocol::audioMessage encodedAudioMessage;
+	encodedAudioMessage.headerId = protocol::AUDIO;
+	encodedAudioMessage.data = strdup(data);
+	encodedAudioMessage.length = frameBuffer;
+
+	auto packet = _protocol.encode(encodedAudioMessage);
+	out.writeRawData((char*)packet, 1024);
+
+	_socket.writeDatagram(datagram, datagram.size(), QHostAddress(QString::fromStdString(_currentContactIp)), _currentContactPort);
+}
+
+callRequest UdpClient::readPendingRequestDatagrams() noexcept
+{
+
+	callRequest request;
+	request.caller = "";
+	request.ip = "";
+	request.port = 0;
+
+	if (_socket.hasPendingDatagrams()) {
+		auto datagram = _socket.receiveDatagram();
+		protocol::PACKET_BUFFER packet;
+		for (int i = 0; i < protocol::PACKET_SIZE; i++)
+			packet[i] = datagram.data()[i];
+
+		auto decodedMessage = _protocol.decodeCallMessage(packet);
+		std::string caller(decodedMessage.clientName);
+		std::string ip(datagram.senderAddress().toString().toStdString());
+
+		request.caller = caller;
+		request.ip = ip;
+		request.port = datagram.senderPort();
+		return request;
+	}
+
+	return request;
+}
+
+bool UdpClient::readPendingResponseDatagrams() noexcept
+{
+	if (_socket.hasPendingDatagrams()) {
+		auto datagram = _socket.receiveDatagram();
+		protocol::PACKET_BUFFER packet;
+		for (int i = 0; i < protocol::PACKET_SIZE; i++)
+			packet[i] = datagram.data()[i];
+
+		auto decodedMessage = _protocol.decodeServerMessage(packet);
+		if (decodedMessage.response == 1)
+			return true;
+		else
+			return false;
+	}
+
+	return false;
+}
+
+protocol::audioMessage UdpClient::readPendingAudioDatagrams() noexcept
 {
 	if (_socket.hasPendingDatagrams()) {
 		auto datagram = _socket.receiveDatagram();
 		std::string ip(datagram.senderAddress().toString().toStdString());
 		std::string port(std::to_string(datagram.senderPort()));
 		std::cout << "Received datagram from " << ip << ":" << port << std::endl;
-		exit(0);
 	}
 }
 
