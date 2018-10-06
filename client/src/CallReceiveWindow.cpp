@@ -1,9 +1,11 @@
+#include <CallWindow.hpp>
+#include <iostream>
 #include "CallReceiveWindow.hpp"
 #include "ui_CallReceiveWindow.h"
 #include "moc_CallReceiveWindow.cpp"
 
-CallReceiveWindow::CallReceiveWindow(std::string const &name, QWidget *parent)
-	: QMainWindow(parent), ui(new Ui::CallReceiveWindow)
+CallReceiveWindow::CallReceiveWindow(std::string const &name, CallWindow *callWindow, QWidget *parent)
+	: QMainWindow(parent), ui(new Ui::CallReceiveWindow), _callWindow(callWindow)
 {
 	ui->setupUi(this);
 	ui->CallReceiveLabel->setText("Call from " + QString(name.c_str()));
@@ -16,11 +18,18 @@ CallReceiveWindow::~CallReceiveWindow()
 
 void CallReceiveWindow::on_AcceptButton_clicked()
 {
-	// Call Window -> Constructor parameter ?
+	this->_callWindow->show();
+	this->close();
+	std::cout << "ACCEPT" << std::endl;
+}
+
+void CallReceiveWindow::setName(std::string name)
+{
+	ui->CallReceiveLabel->setText("Call from " + QString(name.c_str()));
 }
 
 void CallReceiveWindow::on_DeclineButton_clicked()
 {
-	// Send Message Call has been declined
+	std::cout << "ACCEPT" << std::endl;
 	this->close();
 }
