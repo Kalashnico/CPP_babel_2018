@@ -3,6 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include <CallReceiveWindow.hpp>
 #include <CallWindow.hpp>
+#include "UdpClient.hpp"
 
 namespace Ui {
 	class CallReceiveWindow;
@@ -19,6 +20,7 @@ class CallReceiveWindow : public QMainWindow {
 
 		~CallReceiveWindow();
 		void setName(std::string name);
+		void setUdpClient(udpclient::UdpClient*);
 
 	private slots:
 		void on_AcceptButton_clicked();
@@ -27,4 +29,5 @@ class CallReceiveWindow : public QMainWindow {
 	private:
 		Ui::CallReceiveWindow *ui;
 		CallWindow *_callWindow;
+		udpclient::UdpClient *_udpClient;
 };

@@ -18,9 +18,11 @@ CallReceiveWindow::~CallReceiveWindow()
 
 void CallReceiveWindow::on_AcceptButton_clicked()
 {
+
+	this->_udpClient->sendResponseDatagram(true);
+
 	this->_callWindow->show();
 	this->close();
-	std::cout << "ACCEPT" << std::endl;
 }
 
 void CallReceiveWindow::setName(std::string name)
@@ -28,8 +30,14 @@ void CallReceiveWindow::setName(std::string name)
 	ui->CallReceiveLabel->setText("Call from " + QString(name.c_str()));
 }
 
+void CallReceiveWindow::setUdpClient(udpclient::UdpClient *udpClient)
+{
+	this->_udpClient = udpClient;
+}
+
 void CallReceiveWindow::on_DeclineButton_clicked()
 {
-	std::cout << "ACCEPT" << std::endl;
+	this->_udpClient->sendResponseDatagram(false);
+
 	this->close();
 }
