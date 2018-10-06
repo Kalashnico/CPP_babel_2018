@@ -46,6 +46,9 @@ class MainWindow : public QMainWindow {
 		unsigned short _port;
 		std::thread *_thread;
 
+		bool _calling;
+		bool _inCall;
+
 		void backgroundThread();
 };
 

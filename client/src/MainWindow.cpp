@@ -117,7 +117,8 @@ void MainWindow::CallAction()
 		std::string ip(serverReponse.ip);
 		_udpClient->setContactInfo(contact, ip, serverReponse.port);
 		_udpClient->sendCallRequestDatagram();
-	}
 
-	callwindow->show();
+		_calling = true;
+		callwindow->show();
+	}
 }
