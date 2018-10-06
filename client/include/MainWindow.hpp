@@ -48,8 +48,8 @@ class MainWindow : public QMainWindow {
 		std::string _username;
 		unsigned short _port;
 
-		bool _calling;
-		bool _inCall;
+		bool _calling = false;
+		bool _inCall = false;
 
 		// Thread Related
 		std::thread *_thread;
