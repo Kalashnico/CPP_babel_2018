@@ -28,19 +28,22 @@ SOURCES += \
     src/MainWindow.cpp \
     src/LoginWindow.cpp \
     src/TcpClient.cpp \
-    src/Protocol.cpp
+    src/Protocol.cpp \
+    src/CallReceiveWindow.cpp
 
 HEADERS += \
     include/CallWindow.hpp \
     include/MainWindow.hpp \
     include/LoginWindow.hpp \
     include/TcpClient.hpp \
-    include/Protocol.hpp
+    include/Protocol.hpp \
+    include/CallReceiveWindow.hpp
 
 FORMS += \
     form/CallWindow.ui \
     form/MainWindow.ui \
-    form/LoginWindow.ui
+    form/LoginWindow.ui \
+    form/CallReceiveWindow.ui
 
 INCLUDEPATH += include
 
