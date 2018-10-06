@@ -38,7 +38,7 @@ void MainWindow::backgroundThread()
 		auto datagram = this->_udpClient->readPendingRequestDatagrams();
 
 		if (datagram.caller.length() == 0)
-			break;
+			continue;
 
 		std::cout << "Call request from: " << datagram.caller << std::endl;
 	}
