@@ -34,7 +34,6 @@ protocol::serverMessage Data::interpretMessage(protocol::connectionMessage &mess
 	return response;
 }
 
-
 protocol::serverMessage Data::interpretMessage(protocol::callMessage &message) noexcept
 {
 	std::string clientName = std::string(message.clientName);
@@ -71,6 +70,19 @@ protocol::serverMessage Data::interpretMessage(protocol::callMessage &message) n
 	return response;
 }
 
+protocol::infoResponseMessage Data::interpretMessage(protocol::infoMessage&) noexcept
+{
+	protocol::infoResponseMessage response;
+	response.headerId = protocol::SERVER_RESPONSE;
+
+	std::string clients = getAllClientNames();
+
+	response.nextMessageLength = clients.size();
+	response.contactNames = strdup(clients.c_str());
+
+	return response;
+}
+
 bool Data::addClient(protocol::connectionMessage &message) noexcept
 {
 	if (_clients.find(std::string(message.clientName)) == _clients.end()) {
@@ -97,6 +109,22 @@ bool Data::removeClient(std::string &clientName) noexcept
 	}
 
 	return false;
+}
+
+std::string Data::getAllClientNames() const noexcept
+{
+	std::string clients("");
+	int index = 0;
+
+	for (auto &client : _clients) {
+		if (index != 0)
+			clients += "|";
+
+		clients += client.first;
+		index++;
+	}
+
+	return clients;
 }
 
 std::string Data::getClientIp(std::string &clientName) const noexcept

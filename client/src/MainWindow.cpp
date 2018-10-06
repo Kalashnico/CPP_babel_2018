@@ -7,37 +7,37 @@
 #include <QtCore/QStringListModel>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QMenu>
+#include <boost/algorithm/string.hpp>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    _protocol(new protocol::Protocol())
+    _protocol(new protocol::Protocol()),
+    _tcpClient(nullptr)
 {
     ui->setupUi(this);
-    QStringList list;
-    list.append("Contact 1");
-    list.append("Contact 2");
-    list.append("Contact 3");
-    list.append("Contact 4");
-    ui->Contacts->addItems(list);
-
 }
 
 MainWindow::~MainWindow()
 {
-	protocol::connectionMessage disconnectMessage;
-	disconnectMessage.headerId = protocol::DISCONNECT;
-	strcpy(disconnectMessage.clientName, _username.c_str());
-	strcpy(disconnectMessage.ip, "");
-	disconnectMessage.port = _port;
-	_tcpClient->send(disconnectMessage);
+	if (_tcpClient != nullptr) {
+		protocol::connectionMessage disconnectMessage;
+		disconnectMessage.headerId = protocol::DISCONNECT;
+		strcpy(disconnectMessage.clientName, _username.c_str());
+		strcpy(disconnectMessage.ip, "");
+		disconnectMessage.port = _port;
+		_tcpClient->send(disconnectMessage);
+		delete _tcpClient;
+	}
+
 	delete _protocol;
-    delete ui;
+	delete ui;
 }
 
 void MainWindow::setTcpClient(tcpclient::TcpClient *tcp)
 {
     this->_tcpClient = tcp;
+    this->_udpClient = new udpclient::UdpClient(this->_port);
 }
 
 void MainWindow::setUsername(const std::string &username)
@@ -50,10 +50,31 @@ void MainWindow::setPort(unsigned short port)
     this->_port = port;
 }
 
+void MainWindow::refreshContacts()
+{
+	on_RefreshButton_clicked();
+}
+
 void MainWindow::on_RefreshButton_clicked()
 {
-    // Refresh List (See Constructor)
-    std::cout << "Refresh" << std::endl;
+	protocol::infoMessage refreshMessage;
+	refreshMessage.headerId = protocol::GET_CONTACTS;
+	_tcpClient->send(refreshMessage);
+	auto response = _tcpClient->receiveClients();
+
+	std::string contacts(response.contactNames);
+
+	std::vector<std::string> splitContacts;
+	boost::split(splitContacts, contacts, [](char c){return c == '|';});
+
+	_contacts.clear();
+	for (auto contact : splitContacts) {
+		if (contact != _username)
+			_contacts.append(QString::fromStdString(contact));
+	}
+
+	ui->Contacts->clear();
+	ui->Contacts->addItems(_contacts);
 }
 
 void MainWindow::on_Contacts_itemClicked(QListWidgetItem *item)
@@ -68,6 +89,20 @@ void MainWindow::on_Contacts_itemClicked(QListWidgetItem *item)
 
 void MainWindow::CallAction()
 {
-    auto callwindow = new CallWindow(this->_selectedContact, this);
-    callwindow->show();
+	auto callwindow = new CallWindow(this->_selectedContact, this);
+
+	protocol::callMessage callRequestMessage;
+	callRequestMessage.headerId = protocol::REQUEST_CALL;
+	strcpy(callRequestMessage.clientName, _username.c_str());
+	strcpy(callRequestMessage.contactName, _selectedContact.toStdString().c_str());
+	_tcpClient->send(callRequestMessage);
+
+	auto serverReponse =  _tcpClient->receive();
+	if (serverReponse.response == 1) {
+		std::string ip(serverReponse.ip);
+		_udpClient->setContactInfo(ip, serverReponse.port);
+		_udpClient->sendDatagram();
+	}
+
+	callwindow->show();
 }

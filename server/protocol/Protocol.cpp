@@ -5,6 +5,7 @@
 ** Protocol
 */
 
+#include <cstring>
 #include "Protocol.hpp"
 
 namespace protocol {
@@ -40,6 +41,16 @@ PACKET Protocol::encode(callMessage &message) const noexcept
 	return packet;
 }
 
+PACKET Protocol::encode(infoMessage &message) const noexcept
+{
+	PACKET packet = new PACKET_BUFFER;
+	auto ptrBuffer = &packet[0];
+
+	ptrBuffer = encodeHeader(ptrBuffer, message.headerId);
+
+	return packet;
+}
+
 PACKET Protocol::encode(serverMessage &message) const noexcept
 {
 	PACKET packet = new PACKET_BUFFER;
@@ -49,6 +60,18 @@ PACKET Protocol::encode(serverMessage &message) const noexcept
 	ptrBuffer = encodeChar(ptrBuffer, message.response);
 	ptrBuffer = encodeCharArray(ptrBuffer, message.ip, IP_LENGTH);
 	ptrBuffer = encodeUShort(ptrBuffer, message.port);
+
+	return packet;
+}
+
+PACKET Protocol::encode(infoResponseMessage &message) const noexcept
+{
+	PACKET packet = new PACKET_BUFFER;
+	auto ptrBuffer = &packet[0];
+
+	ptrBuffer = encodeHeader(ptrBuffer, message.headerId);
+	ptrBuffer = encodeUShort(ptrBuffer, message.nextMessageLength);
+	ptrBuffer = encodeCharArray(ptrBuffer, message.contactNames, strlen(message.contactNames));
 
 	return packet;
 }
@@ -63,9 +86,11 @@ messageType Protocol::getMessageType(PACKET_BUFFER &buffer) const noexcept
 
 	if (headerValue == 0 || headerValue == 1)
 		type = CONNECTION;
-	else if (headerValue >= 2 && headerValue <= 4)
+	else if (headerValue == 2)
+		type = INFO;
+	else if (headerValue >= 3 && headerValue <= 5)
 		type = CALL;
-	else if (headerValue == 5)
+	else if (headerValue == 6)
 		type = SERVER;
 
 	return type;
@@ -96,6 +121,16 @@ callMessage Protocol::decodeCallMessage(PACKET_BUFFER &buffer) const noexcept
 	return message;
 }
 
+infoMessage Protocol::decodeInfoMessage(PACKET_BUFFER &buffer) const noexcept
+{
+	UINT8 *ptrBuffer = &buffer[0];
+	infoMessage message;
+
+	ptrBuffer = decodeHeader(ptrBuffer, &message.headerId);
+
+	return message;
+}
+
 serverMessage Protocol::decodeServerMessage(PACKET_BUFFER &buffer) const noexcept
 {
 	UINT8 *ptrBuffer = &buffer[0];
@@ -105,6 +140,23 @@ serverMessage Protocol::decodeServerMessage(PACKET_BUFFER &buffer) const noexcep
 	ptrBuffer = decodeChar(ptrBuffer, &message.response);
 	ptrBuffer = decodeCharArray(ptrBuffer, message.ip, IP_LENGTH);
 	ptrBuffer = decodeUShort(ptrBuffer, &message.port);
+
+	return message;
+}
+
+infoResponseMessage Protocol::decodeInfoResponseMessage(UINT8 *buffer, int length) const noexcept
+{
+	UINT8 *ptrBuffer = &buffer[0];
+	infoResponseMessage message;
+
+	ptrBuffer = decodeHeader(ptrBuffer, &message.headerId);
+	ptrBuffer = decodeUShort(ptrBuffer, &message.nextMessageLength);
+	if (length > 0) {
+		message.contactNames = new char[length + 1];
+		ptrBuffer = decodeCharArray(ptrBuffer, message.contactNames, length);
+		message.contactNames[length] = 0;
+	} else
+		message.contactNames = strdup("");
 
 	return message;
 }

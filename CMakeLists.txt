@@ -17,7 +17,8 @@ set(CLIENT_SOURCES ${CLIENT_SOURCES_DIR}/main.cpp
 		   ${CLIENT_SOURCES_DIR}/CallWindow.cpp
 		   ${CLIENT_SOURCES_DIR}/Protocol.cpp
 		   ${CLIENT_SOURCES_DIR}/TcpClient.cpp
- 		   ${CLIENT_SOURCES_DIR}/CallReceiveWindow.cpp)
+ 		   ${CLIENT_SOURCES_DIR}/CallReceiveWindow.cpp
+		   ${CLIENT_SOURCES_DIR}/UdpClient.cpp)
 set(CLIENT_UI	   ${CLIENT_UI_DIR}/CallWindow.ui
                    ${CLIENT_UI_DIR}/CallReceiveWindow.ui
   		   ${CLIENT_UI_DIR}/LoginWindow.ui
@@ -27,7 +28,6 @@ set(SERVER_DIR ${CMAKE_SOURCE_DIR}/server)
 set(SERVER_SOURCES_MAIN	   ${SERVER_DIR}/main.cpp)
 set(SERVER_SOURCES	   ${SERVER_DIR}/protocol/Protocol.cpp
 			   ${SERVER_DIR}/data/Data.cpp
-			   ${SERVER_DIR}/tcpserver/ATcpServer.cpp
 			   ${SERVER_DIR}/tcpserver/BoostTcpServer.cpp
 			   ${SERVER_DIR}/tcpserver/BoostTcpSession.cpp)
 

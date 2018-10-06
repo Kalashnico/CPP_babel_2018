@@ -7,7 +7,8 @@
 LoginWindow::LoginWindow(tcpclient::TcpClient *tcpClient, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::LoginWindow),
-    _tcpClient(tcpClient)
+    _tcpClient(tcpClient),
+    _mainWindow(new MainWindow())
 {
     ui->setupUi(this);
     ui->ConnectionFailedLabel->setVisible(false);
@@ -18,7 +19,9 @@ LoginWindow::LoginWindow(tcpclient::TcpClient *tcpClient, QWidget *parent) :
 
 LoginWindow::~LoginWindow()
 {
-    delete ui;
+	_mainWindow->close();
+	delete _mainWindow;
+	delete ui;
 }
 
 void LoginWindow::on_OkButton_clicked()
@@ -49,10 +52,11 @@ void LoginWindow::on_OkButton_clicked()
     }
 
     if (success) {
-        this->_mainWindow.setPort(port);
-        this->_mainWindow.setUsername(username);
-        this->_mainWindow.setTcpClient(_tcpClient);
-        this->_mainWindow.show();
+        this->_mainWindow->setPort(port);
+        this->_mainWindow->setUsername(username);
+        this->_mainWindow->setTcpClient(_tcpClient);
+        this->_mainWindow->show();
+	this->_mainWindow->refreshContacts();
         this->close();
     } else
         ui->ConnectionFailedLabel->setVisible(true);
