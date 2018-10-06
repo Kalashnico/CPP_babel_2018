@@ -19,6 +19,7 @@ enum header {
 	REQUEST_CALL,
 	NO_REPLY,
 	END_CALL,
+	AUDIO,
 	SERVER_RESPONSE
 };
 
@@ -32,7 +33,7 @@ enum messageType {
 
 struct connectionMessage {
 	header headerId;
-	char clientName[12];
+	char clientName[13];
 	char ip[16];
 	unsigned short port;
 };
@@ -41,6 +42,12 @@ struct callMessage {
 	header headerId;
 	char clientName[12];
 	char contactName[12];
+};
+
+struct audioMessage {
+	header headerId;
+	char *data;
+	unsigned short length;
 };
 
 struct infoMessage {
@@ -80,6 +87,7 @@ class Protocol {
 
 		PACKET encode(connectionMessage&) const noexcept;
 		PACKET encode(callMessage&) const noexcept;
+		PACKET encode(audioMessage&) const noexcept;
 		PACKET encode(infoMessage&) const noexcept;
 		PACKET encode(serverMessage&) const noexcept;
 		PACKET encode(infoResponseMessage&) const noexcept;
@@ -87,6 +95,7 @@ class Protocol {
 		messageType getMessageType(PACKET_BUFFER&) const noexcept;
 		connectionMessage decodeConnectionMessage(PACKET_BUFFER&) const noexcept;
 		callMessage decodeCallMessage(PACKET_BUFFER&) const noexcept;
+		audioMessage decodeAudioMessage(PACKET_BUFFER&, int frameBuffer) const noexcept;
 		infoMessage decodeInfoMessage(PACKET_BUFFER&) const noexcept;
 		serverMessage decodeServerMessage(PACKET_BUFFER&) const noexcept;
 		infoResponseMessage decodeInfoResponseMessage(UINT8*, int) const noexcept;

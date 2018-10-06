@@ -41,6 +41,18 @@ PACKET Protocol::encode(callMessage &message) const noexcept
 	return packet;
 }
 
+PACKET Protocol::encode(audioMessage &message) const noexcept
+{
+	PACKET packet = new PACKET_BUFFER;
+	auto ptrBuffer = &packet[0];
+
+	ptrBuffer = encodeHeader(ptrBuffer, message.headerId);
+	ptrBuffer = encodeCharArray(ptrBuffer, message.data, message.length);
+	ptrBuffer = encodeUShort(ptrBuffer, message.length);
+
+	return packet;
+}
+
 PACKET Protocol::encode(infoMessage &message) const noexcept
 {
 	PACKET packet = new PACKET_BUFFER;
@@ -88,9 +100,9 @@ messageType Protocol::getMessageType(PACKET_BUFFER &buffer) const noexcept
 		type = CONNECTION;
 	else if (headerValue == 2)
 		type = INFO;
-	else if (headerValue >= 3 && headerValue <= 5)
+	else if (headerValue >= 3 && headerValue <= 6)
 		type = CALL;
-	else if (headerValue == 6)
+	else if (headerValue == 7)
 		type = SERVER;
 
 	return type;
@@ -103,6 +115,7 @@ connectionMessage Protocol::decodeConnectionMessage(PACKET_BUFFER &buffer) const
 
 	ptrBuffer = decodeHeader(ptrBuffer, &message.headerId);
 	ptrBuffer = decodeCharArray(ptrBuffer, message.clientName, NAME_LENGTH);
+	message.clientName[12] = 0;
 	ptrBuffer = decodeCharArray(ptrBuffer, message.ip, IP_LENGTH);
 	ptrBuffer = decodeUShort(ptrBuffer, &message.port);
 
@@ -117,6 +130,18 @@ callMessage Protocol::decodeCallMessage(PACKET_BUFFER &buffer) const noexcept
 	ptrBuffer = decodeHeader(ptrBuffer, &message.headerId);
 	ptrBuffer = decodeCharArray(ptrBuffer, message.clientName, NAME_LENGTH);
 	ptrBuffer = decodeCharArray(ptrBuffer, message.contactName, NAME_LENGTH);
+
+	return message;
+}
+
+audioMessage Protocol::decodeAudioMessage(PACKET_BUFFER &buffer, int frameBuffer) const noexcept
+{
+	UINT8 *ptrBuffer = &buffer[0];
+	audioMessage message;
+
+	ptrBuffer = decodeHeader(ptrBuffer, &message.headerId);
+	ptrBuffer = decodeCharArray(ptrBuffer, message.data, frameBuffer);
+	ptrBuffer = decodeUShort(ptrBuffer, &message.length);
 
 	return message;
 }
