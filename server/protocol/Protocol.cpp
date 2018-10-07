@@ -47,7 +47,7 @@ PACKET Protocol::encode(audioMessage &message) const noexcept
 	auto ptrBuffer = &packet[0];
 
 	ptrBuffer = encodeHeader(ptrBuffer, message.headerId);
-	ptrBuffer = encodeCharArray(ptrBuffer, message.data, message.length);
+	ptrBuffer = encodeUCharArray(ptrBuffer, message.data, message.length);
 	ptrBuffer = encodeUShort(ptrBuffer, message.length);
 
 	return packet;
@@ -140,7 +140,7 @@ audioMessage Protocol::decodeAudioMessage(PACKET_BUFFER &buffer, int frameBuffer
 	audioMessage message;
 
 	ptrBuffer = decodeHeader(ptrBuffer, &message.headerId);
-	ptrBuffer = decodeCharArray(ptrBuffer, message.data, frameBuffer);
+	ptrBuffer = decodeUCharArray(ptrBuffer, message.data, frameBuffer);
 	ptrBuffer = decodeUShort(ptrBuffer, &message.length);
 
 	return message;
@@ -198,10 +198,23 @@ UINT8 *Protocol::encodeChar(UINT8 *buffer, char &value) const noexcept
 	return buffer + 1;
 }
 
+UINT8 *Protocol::encodeUChar(UINT8 *buffer, unsigned char &value) const noexcept
+{
+	buffer[0] = value;
+	return buffer + 1;
+}
+
 UINT8 *Protocol::encodeCharArray(UINT8 *buffer, char *array, char length) const noexcept
 {
 	for (int i = 0; i < length; i++)
 		buffer = encodeChar(buffer, array[i]);
+	return buffer;
+}
+
+UINT8 *Protocol::encodeUCharArray(UINT8 *buffer, unsigned char *array, char length) const noexcept
+{
+	for (int i = 0; i < length; i++)
+		buffer = encodeUChar(buffer, array[i]);
 	return buffer;
 }
 
@@ -224,10 +237,23 @@ UINT8 *Protocol::decodeChar(UINT8 *buffer, char *value) const noexcept
 	return buffer + 1;
 }
 
+UINT8 *Protocol::decodeUChar(UINT8 *buffer, unsigned char *value) const noexcept
+{
+	*value = buffer[0];
+	return buffer + 1;
+}
+
 UINT8 *Protocol::decodeCharArray(UINT8 *buffer, char *array, char length) const noexcept
 {
 	for (int i = 0; i < length; i++)
 		buffer = decodeChar(buffer, &array[i]);
+	return buffer;
+}
+
+UINT8 *Protocol::decodeUCharArray(UINT8 *buffer, unsigned char *array, char length) const noexcept
+{
+	for (int i = 0; i < length; i++)
+		buffer = decodeUChar(buffer, &array[i]);
 	return buffer;
 }
 

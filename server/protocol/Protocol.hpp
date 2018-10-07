@@ -46,7 +46,7 @@ struct callMessage {
 
 struct audioMessage {
 	header headerId;
-	char *data;
+	unsigned char *data;
 	unsigned short length;
 };
 
@@ -103,12 +103,16 @@ class Protocol {
 	private:
 		UINT8 *encodeHeader(UINT8*, header&) const noexcept;
 		UINT8 *encodeChar(UINT8*, char&) const noexcept;
+		UINT8 *encodeUChar(UINT8*, unsigned char&) const noexcept;
 		UINT8 *encodeCharArray(UINT8*, char*, char) const noexcept;
+		UINT8 *encodeUCharArray(UINT8*, unsigned char*, char) const noexcept;
 		UINT8 *encodeUShort(UINT8*, unsigned short&) const noexcept;
 
 		UINT8 *decodeHeader(UINT8*, header*) const noexcept;
 		UINT8 *decodeChar(UINT8*, char*) const noexcept;
+		UINT8 *decodeUChar(UINT8*, unsigned char*) const noexcept;
 		UINT8 *decodeCharArray(UINT8*, char*, char) const noexcept;
+		UINT8 *decodeUCharArray(UINT8*, unsigned char*, char) const noexcept;
 		UINT8 *decodeUShort(UINT8*, unsigned short*) const noexcept;
 };
 

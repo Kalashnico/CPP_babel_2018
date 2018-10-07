@@ -26,11 +26,11 @@ class UdpClient {
 
 		void sendCallRequestDatagram() noexcept;
 		void sendResponseDatagram(bool) noexcept;
-		void sendAudioDatagram(char*, unsigned short) noexcept;
+		void sendAudioDatagram(unsigned char*, unsigned short) noexcept;
 
 		callRequest readPendingRequestDatagrams() noexcept;
 		char readPendingResponseDatagrams() noexcept;
-		protocol::audioMessage readPendingAudioDatagrams() noexcept;
+		protocol::audioMessage readPendingAudioDatagrams(int) noexcept;
 
 		void setContactInfo(std::string&, std::string&, unsigned short) noexcept;
 		std::string getContactName() const noexcept;

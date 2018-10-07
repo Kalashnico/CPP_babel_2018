@@ -68,7 +68,7 @@ void UdpClient::sendResponseDatagram(bool response) noexcept
 	_socket.writeDatagram(datagram, datagram.size(), QHostAddress(QString::fromStdString(_currentContactIp)), _currentContactPort);
 }
 
-void UdpClient::sendAudioDatagram(char *data, unsigned short frameBuffer) noexcept
+void UdpClient::sendAudioDatagram(unsigned char *data, unsigned short frameBuffer) noexcept
 {
 	QByteArray datagram;
 	QDataStream out(&datagram, QIODevice::WriteOnly);
@@ -76,11 +76,15 @@ void UdpClient::sendAudioDatagram(char *data, unsigned short frameBuffer) noexce
 
 	protocol::audioMessage encodedAudioMessage;
 	encodedAudioMessage.headerId = protocol::AUDIO;
-	encodedAudioMessage.data = strdup(data);
+	encodedAudioMessage.data = new  unsigned char[frameBuffer];
+
+	for (int i = 0; i < frameBuffer; i++)
+		encodedAudioMessage.data[i] = data[i];
+
 	encodedAudioMessage.length = frameBuffer;
 
 	auto packet = _protocol.encode(encodedAudioMessage);
-	out.writeRawData((char*)packet, 1024);
+	out.writeRawData((char*)packet, 1024 + frameBuffer);
 
 	_socket.writeDatagram(datagram, datagram.size(), QHostAddress(QString::fromStdString(_currentContactIp)), _currentContactPort);
 
@@ -136,26 +140,30 @@ char UdpClient::readPendingResponseDatagrams() noexcept
 	return -1;
 }
 
-protocol::audioMessage UdpClient::readPendingAudioDatagrams() noexcept
+protocol::audioMessage UdpClient::readPendingAudioDatagrams(int frameBuffer) noexcept
 {
 	protocol::audioMessage audioMessage;
 	audioMessage.headerId = protocol::AUDIO;
-	audioMessage.data = strdup("");
+	audioMessage.data = new unsigned char[1];
+	audioMessage.data[0] = 0;
 	audioMessage.length = 0;
 
 	if (_socket.hasPendingDatagrams()) {
 		auto datagram = _socket.receiveDatagram();
 		protocol::PACKET_BUFFER packet;
-		for (int i = 0; i < protocol::PACKET_SIZE; i++)
+		for (int i = 0; i < protocol::PACKET_SIZE + frameBuffer; i++)
 			packet[i] = datagram.data()[i];
 
-		//TODO: 960 is frame buffer, this needs to be set as const somewhere
-		auto decodedMessage = _protocol.decodeAudioMessage(packet, 960);
+		auto decodedMessage = _protocol.decodeAudioMessage(packet, frameBuffer);
 
 		if (decodedMessage.headerId != protocol::AUDIO)
 			return audioMessage;
 
-		audioMessage.data = strdup(decodedMessage.data);
+		audioMessage.data = new unsigned char[frameBuffer];
+
+		for (int i = 0; i < frameBuffer; i++)
+			audioMessage.data[i] = decodedMessage.data[i];
+
 		audioMessage.length = decodedMessage.length;
 	}
 
