@@ -8,7 +8,7 @@ CallWindow::CallWindow(QString contactCalled, QWidget *parent) : QMainWindow(
 	parent), ui(new Ui::CallWindow), _contactCalled(contactCalled)
 {
 	ui->setupUi(this);
-	this->setWindowTitle("Calling " + _contactCalled);
+    ui->CallLabel->setText("Calling " + _contactCalled);
 	// Setup Call
     this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 }
@@ -53,8 +53,8 @@ void CallWindow::setUsername(std::string &username)
 
 void CallWindow::setContactName(std::string &name)
 {
-	this->setWindowTitle(name.c_str());
-	this->_contactCalled = QString(name.c_str());
+    this->_contactCalled = QString(name.c_str());
+    ui->CallLabel->setText("Calling " + _contactCalled);
 }
 
 void CallWindow::setTcpClient(tcpclient::TcpClient *tcpClient)
