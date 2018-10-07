@@ -153,7 +153,7 @@ protocol::audioMessage UdpClient::readPendingAudioDatagrams(int frameBuffer) noe
 		std::cout << "Found datagram" << std::endl;
 
 		auto datagram = _socket.receiveDatagram();
-		protocol::PACKET_BUFFER packet;
+		protocol::UINT8 packet[protocol::PACKET_SIZE + frameBuffer];
 		for (int i = 0; i < protocol::PACKET_SIZE + frameBuffer; i++)
 			packet[i] = datagram.data()[i];
 
@@ -168,6 +168,8 @@ protocol::audioMessage UdpClient::readPendingAudioDatagrams(int frameBuffer) noe
 
 		delete audioMessage.data;
 		audioMessage.data = new unsigned char[decodedMessage.length];
+
+		std::cout << "Length: " << decodedMessage.length << std::endl;
 
 		for (int i = 0; i < audioMessage.length; i++)
 			audioMessage.data[i] = decodedMessage.data[i];
