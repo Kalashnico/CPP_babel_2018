@@ -85,6 +85,7 @@ int SoundManager::paCallback(const void *inputBuffer, void *outputBuffer,
 
 	if (in != nullptr) {
 		auto encodedSound = _codecManager->encode(in);
+		std::cout << "Length: " << encodedSound.bytes << std::endl;
 		_udpClient->sendAudioDatagram(encodedSound.encoded.data(), encodedSound.bytes);
 	}
 
@@ -99,10 +100,8 @@ int SoundManager::paCallback(const void *inputBuffer, void *outputBuffer,
 
 		std::cout << "Messege length: " << audioMessage.length << std::endl;
 
-		for (int i = 0; i < audioMessage.length; i++) {
-			std::cout << "Current value: " << i << std::endl;
+		for (int i = 0; i < audioMessage.length; i++)
 			encodedSound.encoded.emplace_back(audioMessage.data[i]);
-		}
 
 		std::cout << "Stored audio message into an encoded struct" << std::endl;
 
