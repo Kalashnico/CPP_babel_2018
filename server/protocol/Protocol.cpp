@@ -47,8 +47,8 @@ PACKET Protocol::encode(audioMessage &message) const noexcept
 	auto ptrBuffer = &packet[0];
 
 	ptrBuffer = encodeHeader(ptrBuffer, message.headerId);
-	ptrBuffer = encodeUCharArray(ptrBuffer, message.data, message.length);
 	ptrBuffer = encodeUShort(ptrBuffer, message.length);
+	ptrBuffer = encodeUCharArray(ptrBuffer, message.data, message.length);
 
 	return packet;
 }
@@ -134,13 +134,14 @@ callMessage Protocol::decodeCallMessage(PACKET_BUFFER &buffer) const noexcept
 	return message;
 }
 
-audioMessage Protocol::decodeAudioMessage(PACKET_BUFFER &buffer) const noexcept
+audioMessage Protocol::decodeAudioMessage(UINT8 *buffer) const noexcept
 {
 	UINT8 *ptrBuffer = &buffer[0];
 	audioMessage message;
 
 	ptrBuffer = decodeHeader(ptrBuffer, &message.headerId);
 	ptrBuffer = decodeUShort(ptrBuffer, &message.length);
+	message.data = new unsigned char[message.length];
 	ptrBuffer = decodeUCharArray(ptrBuffer, message.data, message.length);
 
 	return message;

@@ -95,7 +95,7 @@ class Protocol {
 		messageType getMessageType(PACKET_BUFFER&) const noexcept;
 		connectionMessage decodeConnectionMessage(PACKET_BUFFER&) const noexcept;
 		callMessage decodeCallMessage(PACKET_BUFFER&) const noexcept;
-		audioMessage decodeAudioMessage(PACKET_BUFFER&) const noexcept;
+		audioMessage decodeAudioMessage(UINT8*) const noexcept;
 		infoMessage decodeInfoMessage(PACKET_BUFFER&) const noexcept;
 		serverMessage decodeServerMessage(PACKET_BUFFER&) const noexcept;
 		infoResponseMessage decodeInfoResponseMessage(UINT8*, int) const noexcept;
