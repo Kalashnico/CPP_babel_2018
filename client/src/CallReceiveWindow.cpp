@@ -4,6 +4,7 @@
 #include "CallReceiveWindow.hpp"
 #include "ui_CallReceiveWindow.h"
 #include "moc_CallReceiveWindow.cpp"
+#include "SoundManager.hpp"
 
 CallReceiveWindow::CallReceiveWindow(std::string const &name, CallWindow *callWindow, QWidget *parent)
 	: QMainWindow(parent), ui(new Ui::CallReceiveWindow), _callWindow(callWindow)
@@ -28,6 +29,9 @@ void CallReceiveWindow::on_AcceptButton_clicked()
 	parent->setCalling(false);
 	parent->setInCall(true);
 	this->close();
+
+	SoundManager *sm = new SoundManager(_udpClient);
+
 }
 
 void CallReceiveWindow::on_DeclineButton_clicked()

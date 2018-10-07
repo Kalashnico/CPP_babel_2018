@@ -2,6 +2,7 @@
 #include "CallWindow.hpp"
 #include "ui_MainWindow.h"
 #include "moc_MainWindow.cpp"
+#include "SoundManager.hpp"
 #include <iostream>
 #include <chrono>
 #include <QtWidgets/QListView>
@@ -63,8 +64,10 @@ void MainWindow::backgroundThread()
 		if (_calling) {
 			auto response = this->_udpClient->readPendingResponseDatagrams();
 			if (response != -1) {
-				if (response == 1)
+				if (response == 1) {
 					_inCall = true;
+					SoundManager *sm = new SoundManager(_udpClient);
+				}
 				else if (response == 0) {
 					protocol::callMessage declineMessage;
 					declineMessage.headerId = protocol::END_CALL;
