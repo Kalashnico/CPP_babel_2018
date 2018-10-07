@@ -20,11 +20,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 	ui->setupUi(this);
 	this->_callWindow = new CallWindow("", this);
 	this->_callReceiveWindow = new CallReceiveWindow("", this->_callWindow, this);
+	this->_isWindowActive = true;
 }
-
 
 MainWindow::~MainWindow()
 {
+	this->_isWindowActive = false;
 	if (_tcpClient != nullptr) {
 		protocol::connectionMessage disconnectMessage;
 		disconnectMessage.headerId = protocol::DISCONNECT;
@@ -41,7 +42,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::backgroundThread()
 {
-	while (1) {
+	while (this->_isWindowActive) {
 
 		if (!_calling && !_inCall) {
 			auto datagram = this->_udpClient->readPendingRequestDatagrams();
@@ -88,11 +89,21 @@ void MainWindow::backgroundThread()
 	}
 }
 
+void MainWindow::refreshThread()
+{
+	while (this->_isWindowActive)
+	{
+		std::this_thread::sleep_for(std::chrono::seconds(5));
+		this->refreshContacts();
+	}
+}
+
 void MainWindow::setTcpClient(tcpclient::TcpClient *tcp)
 {
 	this->_tcpClient = tcp;
 	this->_udpClient = new udpclient::UdpClient(this->_username, this->_port);
 	this->_thread = new std::thread(&MainWindow::backgroundThread, this);
+	this->_refreshThread = new std::thread(&MainWindow::refreshThread, this);
 }
 
 void MainWindow::setUsername(const std::string &username)

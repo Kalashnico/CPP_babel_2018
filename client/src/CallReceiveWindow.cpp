@@ -10,6 +10,7 @@ CallReceiveWindow::CallReceiveWindow(std::string const &name, CallWindow *callWi
 {
 	ui->setupUi(this);
 	ui->CallReceiveLabel->setText("Call from " + QString(name.c_str()));
+    this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 }
 
 CallReceiveWindow::~CallReceiveWindow()

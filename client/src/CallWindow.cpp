@@ -10,11 +10,11 @@ CallWindow::CallWindow(QString contactCalled, QWidget *parent) : QMainWindow(
 	ui->setupUi(this);
 	this->setWindowTitle("Calling " + _contactCalled);
 	// Setup Call
+    this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 }
 
 CallWindow::~CallWindow()
 {
-
 	delete ui;
 }
 

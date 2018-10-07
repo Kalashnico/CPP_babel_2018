@@ -57,8 +57,13 @@ class MainWindow : public QMainWindow {
 		int _timeout = 0;
 
 		// Thread Related
+		bool _isWindowActive;
+
 		std::thread *_thread;
 		void backgroundThread();
+
+		std::thread *_refreshThread;
+		void refreshThread();
 
 
 };
