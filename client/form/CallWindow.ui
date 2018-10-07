@@ -41,7 +41,14 @@
      </property>
      <item row="0" column="0">
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="2" alignment="Qt::AlignHCenter">
+       <item row="1" column="3" alignment="Qt::AlignHCenter">
+        <widget class="QPushButton" name="HangUpButton">
+         <property name="text">
+          <string>Hang up</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2" alignment="Qt::AlignHCenter">
         <widget class="QCheckBox" name="MuteCheckBox">
          <property name="layoutDirection">
           <enum>Qt::LeftToRight</enum>
@@ -57,14 +64,7 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="3" alignment="Qt::AlignHCenter">
-        <widget class="QPushButton" name="HangUpButton">
-         <property name="text">
-          <string>Hang up</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
+       <item row="1" column="0">
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="VolumeLabel">
@@ -84,6 +84,13 @@
           </widget>
          </item>
         </layout>
+       </item>
+       <item row="0" column="2" alignment="Qt::AlignHCenter">
+        <widget class="QLabel" name="CallLabel">
+         <property name="text">
+          <string>Contacts :</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
