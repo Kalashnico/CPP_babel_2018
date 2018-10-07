@@ -5,16 +5,13 @@
 ** Sound Manager
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "SoundManager.hpp"
 
 int paCallbackWire(const void *inputBuffer, void *outputBuffer,
-                         unsigned long framesPerBuffer,
-                         const PaStreamCallbackTimeInfo *timeInfo,
-                         PaStreamCallbackFlags statusFlags,
-                         void *userData)
+			unsigned long framesPerBuffer,
+			const PaStreamCallbackTimeInfo *timeInfo,
+			PaStreamCallbackFlags statusFlags,
+			void *userData)
 {
 	SoundManager *sm = reinterpret_cast<SoundManager*>(userData);
 	return sm->paCallback(inputBuffer, outputBuffer, framesPerBuffer, timeInfo, statusFlags, userData);
@@ -33,13 +30,13 @@ SoundManager::SoundManager(udpclient::UdpClient *udpClient)
 	inputParameters.device = Pa_GetDefaultInputDevice();
 	inputParameters.channelCount = NUM_CHANNELS;
 	inputParameters.sampleFormat = PA_SAMPLE_TYPE;
-	inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultHighInputLatency * 10;
+	inputParameters.suggestedLatency = Pa_GetDeviceInfo(inputParameters.device)->defaultHighInputLatency;
 	inputParameters.hostApiSpecificStreamInfo = NULL;
 
 	outputParameters.device = Pa_GetDefaultOutputDevice();
 	outputParameters.channelCount = NUM_CHANNELS;
 	outputParameters.sampleFormat = PA_SAMPLE_TYPE;
-	outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultHighOutputLatency * 10;
+	outputParameters.suggestedLatency = Pa_GetDeviceInfo(outputParameters.device)->defaultHighOutputLatency;
 	outputParameters.hostApiSpecificStreamInfo = NULL;
 
 	Pa_OpenStream(
@@ -54,8 +51,9 @@ SoundManager::SoundManager(udpclient::UdpClient *udpClient)
 
 	Pa_StartStream(stream);
 
-	while (Pa_IsStreamActive(stream))
-		Pa_Sleep(20);
+	while(Pa_IsStreamActive(stream))
+		Pa_Sleep(1000);
+
 
 	Pa_StopStream(stream);
 	Pa_CloseStream(stream);
@@ -69,12 +67,11 @@ SoundManager::~SoundManager()
 }
 
 int SoundManager::paCallback(const void *inputBuffer, void *outputBuffer,
-                         unsigned long framesPerBuffer,
-                         const PaStreamCallbackTimeInfo *timeInfo,
-                         PaStreamCallbackFlags statusFlags,
-                         void *userData)
+				unsigned long framesPerBuffer,
+				const PaStreamCallbackTimeInfo *timeInfo,
+				PaStreamCallbackFlags statusFlags,
+				void *userData)
 {
-
 	(void) timeInfo;
 	(void) statusFlags;
 	(void) userData;
@@ -83,22 +80,31 @@ int SoundManager::paCallback(const void *inputBuffer, void *outputBuffer,
 	unsigned char *out = (unsigned char*) outputBuffer;
 
 	if (in != nullptr) {
-		auto encodedSound = _codecManager->encode(in);
-		_udpClient->sendAudioDatagram(encodedSound.encoded.data(), encodedSound.bytes);
+		//auto encodedSound = _codecManager->encode(in);
+		//_udpClient->sendAudioDatagram(encodedSound.encoded.data(), encodedSound.bytes);
+		_udpClient->sendAudioDatagram(in, framesPerBuffer);
 	}
 
-	auto audioMessage = _udpClient->readPendingAudioDatagrams(framesPerBuffer * NUM_CHANNELS);
+	auto audioMessage = _udpClient->readPendingAudioDatagrams(framesPerBuffer);
 	if (audioMessage.length != 0) {
-		EncodedSound encodedSound;
+		/*EncodedSound encodedSound;
 
 		for (int i = 0; i < audioMessage.length; i++)
 			encodedSound.encoded.emplace_back(audioMessage.data[i]);
 
 		encodedSound.bytes = audioMessage.length;
-		auto decodedSound = _codecManager->decode(encodedSound);
 
-		for (int i = 0; i < framesPerBuffer * NUM_CHANNELS; i++)
-			out[i] = decodedSound[i];
+		delete audioMessage.data;
+
+		auto decodedSound = _codecManager->decode(encodedSound);*/
+
+		for (int i = 0; i < framesPerBuffer; i++)
+			out[i] = audioMessage.data[i];
+
+		//delete decodedSound;
+	} else {
+		for (int i = 0; i < framesPerBuffer; i++)
+			out[i] = 0;
 	}
 
 	return paContinue;

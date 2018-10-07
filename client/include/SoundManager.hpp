@@ -12,12 +12,9 @@
 #include "portaudio.h"
 
 #define SAMPLE_RATE  (48000)
-#define FRAMES_PER_BUFFER (20 * SAMPLE_RATE / 1000)
+#define FRAMES_PER_BUFFER (960)
 #define NUM_CHANNELS    (1)
-
 #define PA_SAMPLE_TYPE  paInt16
-#define SAMPLE_SIZE sizeof(short)
-#define SAMPLE_SILENCE  (0)
 
 class SoundManager {
 	public:

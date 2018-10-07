@@ -5,7 +5,6 @@
 ** TcpClient
 */
 
-#include <iostream>
 #include "UdpClient.hpp"
 
 namespace udpclient {
@@ -87,12 +86,10 @@ void UdpClient::sendAudioDatagram(unsigned char *data, int buffer) noexcept
 	out.writeRawData((char*)packet, 1024 + buffer);
 
 	_socket.writeDatagram(datagram, datagram.size(), QHostAddress(QString::fromStdString(_currentContactIp)), _currentContactPort);
-
 }
 
 callRequest UdpClient::readPendingRequestDatagrams() noexcept
 {
-
 	callRequest request;
 	request.caller = "";
 	request.ip = "";
@@ -166,6 +163,7 @@ protocol::audioMessage UdpClient::readPendingAudioDatagrams(int frameBuffer) noe
 			audioMessage.data[i] = decodedMessage.data[i];
 
 		audioMessage.length = decodedMessage.length;
+		delete decodedMessage.data;
 	}
 
 	return audioMessage;

@@ -3,7 +3,6 @@
 #include "ui_MainWindow.h"
 #include "moc_MainWindow.cpp"
 #include "SoundManager.hpp"
-#include <iostream>
 #include <chrono>
 #include <QtWidgets/QListView>
 #include <QtCore/QStringListModel>
@@ -42,6 +41,11 @@ MainWindow::~MainWindow()
 void MainWindow::backgroundThread()
 {
 	while (this->_isWindowActive) {
+
+		if (_inCall)
+			continue;
+
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 		if (!_calling && !_inCall) {
 			auto datagram = this->_udpClient->readPendingRequestDatagrams();

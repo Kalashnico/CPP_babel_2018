@@ -28,7 +28,7 @@ CodecManager::CodecManager(int channels, int bufferSize, int sampleRate)
 EncodedSound CodecManager::encode(unsigned char *sound)
 {
 	EncodedSound encodedStruct;
-	encodedStruct.encoded.resize(_bufferSize * _channels * _sampleRate);
+	encodedStruct.encoded.resize(_bufferSize);
 
 	_bytes = opus_encode(_encoder, reinterpret_cast<opus_int16 const *>(sound),
 			     _bufferSize, encodedStruct.encoded.data(), _bufferSize);
@@ -45,14 +45,16 @@ unsigned char *CodecManager::decode(EncodedSound sound)
 {
 	std::vector<unsigned char> decoded;
 
-	decoded.resize(_bufferSize * _channels * _sampleRate);
+	decoded.resize(_bufferSize);
 	auto dec_bytes = opus_decode(_decoder, sound.encoded.data(), sound.bytes,
 					   reinterpret_cast<opus_int16 *>(decoded.data()), _bufferSize, 0);
 
-	if (dec_bytes < 0)
+	if (dec_bytes < 0) {
 		std::cerr << "Failed to decode sound" << std::endl;
+		std::fill(decoded.begin(), decoded.end(), 0);
+	}
 
-	unsigned char *decodedArray = (unsigned char*) malloc(_bufferSize * _channels * _sampleRate);
+	unsigned char *decodedArray = (unsigned char*) malloc(_bufferSize);
 	std::copy(decoded.begin(), decoded.end(), decodedArray);
 
 	return decodedArray;

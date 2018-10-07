@@ -1,5 +1,4 @@
 #include <CallWindow.hpp>
-#include <iostream>
 #include <MainWindow.hpp>
 #include "CallReceiveWindow.hpp"
 #include "ui_CallReceiveWindow.h"
