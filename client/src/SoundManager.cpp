@@ -78,27 +78,44 @@ int SoundManager::paCallback(const void *inputBuffer, void *outputBuffer,
 	(void) statusFlags;
 	(void) userData;
 
+	std::cout << "Hi" << std::endl;
+
 	unsigned char *in = (unsigned char*) inputBuffer;
 	unsigned char *out = (unsigned char*) outputBuffer;
 
 	if (in != nullptr) {
 		auto encodedSound = _codecManager->encode(in);
-		_udpClient->sendAudioDatagram(encodedSound.encoded.data(), framesPerBuffer * NUM_CHANNELS);
+		_udpClient->sendAudioDatagram(encodedSound.encoded.data(), encodedSound.bytes);
 	}
 
+	std::cout << "Input done" << std::endl;
+
 	auto audioMessage = _udpClient->readPendingAudioDatagrams(framesPerBuffer * NUM_CHANNELS);
+
+	std::cout << "Got output" << std::endl;
+
 	if (audioMessage.length != 0) {
 		EncodedSound encodedSound;
 
-		for (int i = 0; i < framesPerBuffer * NUM_CHANNELS; i++)
+		std::cout << "Messege length: " << audioMessage.length << std::endl;
+
+		for (int i = 0; i < audioMessage.length; i++) {
+			std::cout << "Current value: " << i << std::endl;
 			encodedSound.encoded.emplace_back(audioMessage.data[i]);
+		}
+
+		std::cout << "Stored audio message into an encoded struct" << std::endl;
 
 		encodedSound.bytes = audioMessage.length;
 		auto decodedSound = _codecManager->decode(encodedSound);
 
+		std::cout << "Decoded sound" << std::endl;
+
 		for (int i = 0; i < framesPerBuffer * NUM_CHANNELS; i++)
 			out[i] = decodedSound[i];
 	}
+
+	std::cout << "Bye" << std::endl;
 
 	return paContinue;
 }

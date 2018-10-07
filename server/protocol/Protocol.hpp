@@ -46,8 +46,8 @@ struct callMessage {
 
 struct audioMessage {
 	header headerId;
-	unsigned char *data;
 	unsigned short length;
+	unsigned char *data;
 };
 
 struct infoMessage {
@@ -95,7 +95,7 @@ class Protocol {
 		messageType getMessageType(PACKET_BUFFER&) const noexcept;
 		connectionMessage decodeConnectionMessage(PACKET_BUFFER&) const noexcept;
 		callMessage decodeCallMessage(PACKET_BUFFER&) const noexcept;
-		audioMessage decodeAudioMessage(PACKET_BUFFER&, int frameBuffer) const noexcept;
+		audioMessage decodeAudioMessage(PACKET_BUFFER&) const noexcept;
 		infoMessage decodeInfoMessage(PACKET_BUFFER&) const noexcept;
 		serverMessage decodeServerMessage(PACKET_BUFFER&) const noexcept;
 		infoResponseMessage decodeInfoResponseMessage(UINT8*, int) const noexcept;

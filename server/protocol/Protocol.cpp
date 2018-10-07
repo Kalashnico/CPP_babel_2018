@@ -134,14 +134,14 @@ callMessage Protocol::decodeCallMessage(PACKET_BUFFER &buffer) const noexcept
 	return message;
 }
 
-audioMessage Protocol::decodeAudioMessage(PACKET_BUFFER &buffer, int frameBuffer) const noexcept
+audioMessage Protocol::decodeAudioMessage(PACKET_BUFFER &buffer) const noexcept
 {
 	UINT8 *ptrBuffer = &buffer[0];
 	audioMessage message;
 
 	ptrBuffer = decodeHeader(ptrBuffer, &message.headerId);
-	ptrBuffer = decodeUCharArray(ptrBuffer, message.data, frameBuffer);
 	ptrBuffer = decodeUShort(ptrBuffer, &message.length);
+	ptrBuffer = decodeUCharArray(ptrBuffer, message.data, message.length);
 
 	return message;
 }

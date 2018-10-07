@@ -5,8 +5,8 @@
 ** TcpClient
 */
 
-#include "UdpClient.hpp"
 #include <iostream>
+#include "UdpClient.hpp"
 
 namespace udpclient {
 
@@ -68,7 +68,7 @@ void UdpClient::sendResponseDatagram(bool response) noexcept
 	_socket.writeDatagram(datagram, datagram.size(), QHostAddress(QString::fromStdString(_currentContactIp)), _currentContactPort);
 }
 
-void UdpClient::sendAudioDatagram(unsigned char *data, unsigned short frameBuffer) noexcept
+void UdpClient::sendAudioDatagram(unsigned char *data, int buffer) noexcept
 {
 	QByteArray datagram;
 	QDataStream out(&datagram, QIODevice::WriteOnly);
@@ -76,15 +76,15 @@ void UdpClient::sendAudioDatagram(unsigned char *data, unsigned short frameBuffe
 
 	protocol::audioMessage encodedAudioMessage;
 	encodedAudioMessage.headerId = protocol::AUDIO;
-	encodedAudioMessage.data = new  unsigned char[frameBuffer];
+	encodedAudioMessage.data = new  unsigned char[buffer];
 
-	for (int i = 0; i < frameBuffer; i++)
+	for (int i = 0; i < buffer; i++)
 		encodedAudioMessage.data[i] = data[i];
 
-	encodedAudioMessage.length = frameBuffer;
+	encodedAudioMessage.length = buffer;
 
 	auto packet = _protocol.encode(encodedAudioMessage);
-	out.writeRawData((char*)packet, 1024 + frameBuffer);
+	out.writeRawData((char*)packet, 1024 + buffer);
 
 	_socket.writeDatagram(datagram, datagram.size(), QHostAddress(QString::fromStdString(_currentContactIp)), _currentContactPort);
 
@@ -149,23 +149,35 @@ protocol::audioMessage UdpClient::readPendingAudioDatagrams(int frameBuffer) noe
 	audioMessage.length = 0;
 
 	if (_socket.hasPendingDatagrams()) {
+
+		std::cout << "Found datagram" << std::endl;
+
 		auto datagram = _socket.receiveDatagram();
 		protocol::PACKET_BUFFER packet;
 		for (int i = 0; i < protocol::PACKET_SIZE + frameBuffer; i++)
 			packet[i] = datagram.data()[i];
 
-		auto decodedMessage = _protocol.decodeAudioMessage(packet, frameBuffer);
+		std::cout << "Got encoded datagram" << std::endl;
+
+		auto decodedMessage = _protocol.decodeAudioMessage(packet);
+
+		std::cout << "Datagram decoded" << std::endl;
 
 		if (decodedMessage.headerId != protocol::AUDIO)
 			return audioMessage;
 
-		audioMessage.data = new unsigned char[frameBuffer];
+		delete audioMessage.data;
+		audioMessage.data = new unsigned char[decodedMessage.length];
 
-		for (int i = 0; i < frameBuffer; i++)
+		for (int i = 0; i < audioMessage.length; i++)
 			audioMessage.data[i] = decodedMessage.data[i];
+
+		std::cout << "Datagram stored in audioMessage" << std::endl;
 
 		audioMessage.length = decodedMessage.length;
 	}
+
+	std::cout << "Returning audioMessage" << std::endl;
 
 	return audioMessage;
 }

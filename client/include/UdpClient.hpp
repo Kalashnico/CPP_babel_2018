@@ -26,7 +26,7 @@ class UdpClient {
 
 		void sendCallRequestDatagram() noexcept;
 		void sendResponseDatagram(bool) noexcept;
-		void sendAudioDatagram(unsigned char*, unsigned short) noexcept;
+		void sendAudioDatagram(unsigned char*, int) noexcept;
 
 		callRequest readPendingRequestDatagrams() noexcept;
 		char readPendingResponseDatagrams() noexcept;
