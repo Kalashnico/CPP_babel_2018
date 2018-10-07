@@ -101,6 +101,10 @@ callRequest UdpClient::readPendingRequestDatagrams() noexcept
 			packet[i] = datagram.data()[i];
 
 		auto decodedMessage = _protocol.decodeCallMessage(packet);
+
+		if (decodedMessage.headerId != protocol::REQUEST_CALL)
+			return request;
+
 		std::string caller(decodedMessage.clientName);
 		std::string ip(datagram.senderAddress().toString().toStdString());
 
@@ -122,6 +126,10 @@ char UdpClient::readPendingResponseDatagrams() noexcept
 			packet[i] = datagram.data()[i];
 
 		auto decodedMessage = _protocol.decodeServerMessage(packet);
+
+		if (decodedMessage.headerId != protocol::SERVER_RESPONSE)
+			return -1;
+
 		return decodedMessage.response;
 	}
 
@@ -130,12 +138,28 @@ char UdpClient::readPendingResponseDatagrams() noexcept
 
 protocol::audioMessage UdpClient::readPendingAudioDatagrams() noexcept
 {
+	protocol::audioMessage audioMessage;
+	audioMessage.headerId = protocol::AUDIO;
+	audioMessage.data = strdup("");
+	audioMessage.length = 0;
+
 	if (_socket.hasPendingDatagrams()) {
 		auto datagram = _socket.receiveDatagram();
-		std::string ip(datagram.senderAddress().toString().toStdString());
-		std::string port(std::to_string(datagram.senderPort()));
-		std::cout << "Received datagram from " << ip << ":" << port << std::endl;
+		protocol::PACKET_BUFFER packet;
+		for (int i = 0; i < protocol::PACKET_SIZE; i++)
+			packet[i] = datagram.data()[i];
+
+		//TODO: 960 is frame buffer, this needs to be set as const somewhere
+		auto decodedMessage = _protocol.decodeAudioMessage(packet, 960);
+
+		if (decodedMessage.headerId != protocol::AUDIO)
+			return audioMessage;
+
+		audioMessage.data = strdup(decodedMessage.data);
+		audioMessage.length = decodedMessage.length;
 	}
+
+	return audioMessage;
 }
 
 }
