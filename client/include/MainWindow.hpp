@@ -54,7 +54,6 @@ class MainWindow : public QMainWindow {
 
 		bool _calling = false;
 		bool _inCall = false;
-		int _timeout = 0;
 
 		// Thread Related
 		bool _isWindowActive;

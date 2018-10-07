@@ -11,8 +11,6 @@
 #include <boost/algorithm/string.hpp>
 #include <CallReceiveWindow.hpp>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 	ui(new Ui::MainWindow), _protocol(new protocol::Protocol()),
 	_tcpClient(nullptr)
@@ -67,24 +65,18 @@ void MainWindow::backgroundThread()
 			if (response != -1) {
 				if (response == 1)
 					_inCall = true;
+				else if (response == 0) {
+					protocol::callMessage declineMessage;
+					declineMessage.headerId = protocol::END_CALL;
+					strcpy(declineMessage.clientName, _username.c_str());
+					strcpy(declineMessage.contactName, this->_udpClient->getContactName().c_str());
+					_tcpClient->send(declineMessage);
+					_tcpClient->receive();
+
+					this->_callWindow->close();
+				}
 				_calling = false;
 			}
-
-			std::this_thread::sleep_for(std::chrono::seconds(1));
-			if (this->_timeout++ == 10) {
-				this->_timeout = 0;
-				_calling = false;
-
-				protocol::callMessage noReplyMessage;
-				noReplyMessage.headerId = protocol::NO_REPLY;
-				strcpy(noReplyMessage.clientName, _username.c_str());
-				strcpy(noReplyMessage.contactName, this->_udpClient->getContactName().c_str());
-				_tcpClient->send(noReplyMessage);
-				_tcpClient->receive();
-
-				this->_callWindow->close();
-			}
-
 		}
 	}
 }
@@ -176,7 +168,6 @@ void MainWindow::CallAction()
 		_udpClient->sendCallRequestDatagram();
 
 		_calling = true;
-		_timeout = 0;
 		this->_callWindow->show();
 	}
 }
@@ -190,5 +181,3 @@ void MainWindow::setCalling(bool const &value)
 {
 	this->_calling = value;
 }
-
-#pragma clang diagnostic pop
