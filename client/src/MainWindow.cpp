@@ -81,21 +81,11 @@ void MainWindow::backgroundThread()
 	}
 }
 
-void MainWindow::refreshThread()
-{
-	while (this->_isWindowActive)
-	{
-		std::this_thread::sleep_for(std::chrono::seconds(5));
-		this->refreshContacts();
-	}
-}
-
 void MainWindow::setTcpClient(tcpclient::TcpClient *tcp)
 {
 	this->_tcpClient = tcp;
 	this->_udpClient = new udpclient::UdpClient(this->_username, this->_port);
 	this->_thread = new std::thread(&MainWindow::backgroundThread, this);
-	this->_refreshThread = new std::thread(&MainWindow::refreshThread, this);
 }
 
 void MainWindow::setUsername(const std::string &username)

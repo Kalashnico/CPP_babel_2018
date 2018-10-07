@@ -60,11 +60,6 @@ class MainWindow : public QMainWindow {
 
 		std::thread *_thread;
 		void backgroundThread();
-
-		std::thread *_refreshThread;
-		void refreshThread();
-
-
 };
 
 #endif // MAINWINDOW_H
