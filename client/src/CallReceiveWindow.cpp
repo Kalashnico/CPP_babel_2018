@@ -1,5 +1,6 @@
 #include <CallWindow.hpp>
 #include <iostream>
+#include <MainWindow.hpp>
 #include "CallReceiveWindow.hpp"
 #include "ui_CallReceiveWindow.h"
 #include "moc_CallReceiveWindow.cpp"
@@ -22,6 +23,18 @@ void CallReceiveWindow::on_AcceptButton_clicked()
 	this->_udpClient->sendResponseDatagram(true);
 
 	this->_callWindow->show();
+	auto parent = dynamic_cast<MainWindow*>(this->parent());
+	parent->setCalling(false);
+	parent->setInCall(true);
+	this->close();
+}
+
+void CallReceiveWindow::on_DeclineButton_clicked()
+{
+	auto parent = dynamic_cast<MainWindow*>(this->parent());
+	parent->setCalling(false);
+	parent->setInCall(false);
+	this->_udpClient->sendResponseDatagram(false);
 	this->close();
 }
 
@@ -33,11 +46,4 @@ void CallReceiveWindow::setName(std::string name)
 void CallReceiveWindow::setUdpClient(udpclient::UdpClient *udpClient)
 {
 	this->_udpClient = udpClient;
-}
-
-void CallReceiveWindow::on_DeclineButton_clicked()
-{
-	this->_udpClient->sendResponseDatagram(false);
-
-	this->close();
 }

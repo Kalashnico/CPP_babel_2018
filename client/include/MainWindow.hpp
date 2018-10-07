@@ -26,6 +26,10 @@ class MainWindow : public QMainWindow {
 		void setPort(unsigned short port);
 		void refreshContacts();
 
+		// Setters
+		void setInCall(bool const &value);
+		void setCalling(bool const &value);
+
 	private slots:
 		void on_Contacts_itemClicked(QListWidgetItem *item);
 		void on_RefreshButton_clicked();

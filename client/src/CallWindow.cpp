@@ -2,6 +2,7 @@
 #include "ui_CallWindow.h"
 #include "moc_CallWindow.cpp"
 #include <iostream>
+#include <MainWindow.hpp>
 
 CallWindow::CallWindow(QString contactCalled, QWidget *parent) : QMainWindow(
 	parent), ui(new Ui::CallWindow), _contactCalled(contactCalled)
@@ -13,6 +14,7 @@ CallWindow::CallWindow(QString contactCalled, QWidget *parent) : QMainWindow(
 
 CallWindow::~CallWindow()
 {
+
 	delete ui;
 }
 
@@ -20,6 +22,7 @@ void CallWindow::on_VolumeSlider_valueChanged(int value)
 {
 	// Change Call Volume
 	std::cout << value << std::endl;
+
 }
 
 void CallWindow::on_MuteCheckBox_stateChanged(int value)
@@ -31,7 +34,8 @@ void CallWindow::on_MuteCheckBox_stateChanged(int value)
 void CallWindow::on_HangUpButton_clicked()
 {
 	// End Call
-
+	auto parent = dynamic_cast<MainWindow *>(this->parent());
+	parent->setInCall(false);
 	protocol::callMessage endCallMessage;
 	endCallMessage.headerId = protocol::END_CALL;
 	strcpy(endCallMessage.clientName, _username.c_str());

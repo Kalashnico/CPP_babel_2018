@@ -11,13 +11,15 @@
 #include <boost/algorithm/string.hpp>
 #include <CallReceiveWindow.hpp>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 	ui(new Ui::MainWindow), _protocol(new protocol::Protocol()),
 	_tcpClient(nullptr)
 {
 	ui->setupUi(this);
 	this->_callWindow = new CallWindow("", this);
-	this->_callReceiveWindow = new CallReceiveWindow("", this->_callWindow);
+	this->_callReceiveWindow = new CallReceiveWindow("", this->_callWindow, this);
 }
 
 
@@ -167,3 +169,15 @@ void MainWindow::CallAction()
 		this->_callWindow->show();
 	}
 }
+
+void MainWindow::setInCall(bool const &value)
+{
+	this->_inCall = value;
+}
+
+void MainWindow::setCalling(bool const &value)
+{
+	this->_calling = value;
+}
+
+#pragma clang diagnostic pop
