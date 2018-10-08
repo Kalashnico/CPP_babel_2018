@@ -74,11 +74,15 @@ int SoundManager::paCallback(const void *inputBuffer, void *outputBuffer,
 	unsigned char *out = (unsigned char*) outputBuffer;
 
 	if (in != nullptr) {
-		for (int i = 0; i < framesPerBuffer; i++)
-			out[i] = in[i];
+		for (int i = 0; i < framesPerBuffer; i++) {
+			*out++ = *in++;
+			*out++ = *in++;
+		}
 	} else {
-		for (int i = 0; i < framesPerBuffer; i++)
-			out[i] = 0;
+		for (int i = 0; i < framesPerBuffer; i++) {
+			*out++ = 0;
+			*out++ = 0;
+		}
 	}
 
 	return paContinue;
