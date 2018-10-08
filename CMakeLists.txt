@@ -39,12 +39,20 @@ set(SERVER_TEST_SOURCES ${SERVER_TEST_DIR}/Tests.cpp
 			${SERVER_TEST_DIR}/ProtocolTests.cpp
 			${SERVER_TEST_DIR}/DataTests.cpp)
 
+set(CLIENT_TEST_DIR ${TEST_DIR}/client)
+set(CLIENT_TEST_SOURCES ${CLIENT_TEST_DIR}/SoundTest.cpp)
+
 add_executable(babel_server_tests ${SERVER_SOURCES} ${SERVER_TEST_SOURCES})
 conan_target_link_libraries(babel_server_tests)
 target_include_directories(babel_server_tests PRIVATE ${TEST_DIR}/catch2
 						      ${SERVER_TEST_DIR}
 						      ${SERVER_DIR}/protocol
 						      ${SERVER_DIR}/data
+						      ${CONAN_INCLUDE_DIRS})
+
+add_executable(babel_client_tests ${CLIENT_TEST_SOURCES})
+conan_target_link_libraries(babel_client_tests)
+target_include_directories(babel_client_tests PRIVATE ${CLIENT_TEST_DIR}/client
 						      ${CONAN_INCLUDE_DIRS})
 
 add_executable(babel_server ${SERVER_SOURCES_MAIN} ${SERVER_SOURCES})

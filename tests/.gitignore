@@ -5,3 +5,6 @@
 !server/
 !server/*.cpp
 !server/*.hpp
+!client/
+!client/*.cpp
+!client/*.hpp
